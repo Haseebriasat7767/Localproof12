@@ -1,28 +1,30 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Reviews from './pages/Reviews';
-import Alerts from './pages/Alerts';
-import Settings from './pages/Settings';
-import Pricing from './pages/Pricing';
-import Layout from './components/Layout';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Landing from "./pages/Landing";        // ✅ uses the file you already updated
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Reviews from "./pages/Reviews";
+import Alerts from "./pages/Alerts";
+import Settings from "./pages/Settings";
+import Pricing from "./pages/Pricing";
+import Layout from "./components/Layout";
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="flex items-center justify-center h-screen text-gray-500">Loading...</div>;
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen text-white bg-slate-900">Loading...</div>;
+  }
   return user ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Landing />} />   {/* now uses Landing.js */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pricing" element={<Pricing />} />
@@ -31,16 +33,7 @@ export default function App() {
           <Route path="/alerts" element={<PrivateRoute><Layout><Alerts /></Layout></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
-import LandingPage from "./pages/LandingPage";
-
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      {/* ...other routes */}
-    </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
