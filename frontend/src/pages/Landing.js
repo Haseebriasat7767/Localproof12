@@ -4,11 +4,11 @@ import {
   Browser, Gauge, ArrowsClockwise, Star, Quote, CheckCircle
 } from "phosphor-react";
 
-// Simple placeholder while you build your widget
+// Placeholder widget (replace later with your real widget)
 function WidgetPlaceholder() {
   return (
-    <div className="p-6 bg-white/10 rounded-xl text-center text-slate-300">
-      ⭐ Rate Us Widget (coming soon)
+    <div className="p-6 bg-white/10 rounded-xl text-center text-slate-300 text-sm">
+      ⭐ Rate Us Widget – preview soon
     </div>
   );
 }
@@ -96,7 +96,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-slate-950 text-slate-200 antialiased overflow-x-hidden">
-      {/* Navigation */}
+      {/* Sticky nav */}
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
@@ -121,12 +121,12 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative pt-32 pb-24 px-6 overflow-hidden">
+        {/* Animated blobs */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-600/20 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
-          <div className="absolute top-0 -right-40 w-96 h-96 bg-emerald-600/20 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow animation-delay-2000" />
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow animation-delay-4000" />
+          <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-600/20 rounded-full mix-blend-multiply filter blur-3xl" />
+          <div className="absolute top-0 -right-40 w-96 h-96 bg-emerald-600/20 rounded-full mix-blend-multiply filter blur-3xl" />
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-3xl" />
         </div>
-
         <div className="max-w-4xl mx-auto text-center relative">
           <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium backdrop-blur-sm">
             🎉 Free forever – no credit card required
@@ -141,7 +141,6 @@ export default function LandingPage() {
           <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mt-6 mb-10 leading-relaxed">
             Turn happy customers into glowing public reviews. Catch unhappy ones <span className="text-white">privately</span> before they ever touch Google.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
               href="#cta"
@@ -158,28 +157,25 @@ export default function LandingPage() {
               See how it works
             </a>
           </div>
-
           <div className="mt-12 mx-auto max-w-lg bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-5 rounded-2xl shadow-lg">
             <div className="flex items-center gap-2 mb-3">
               <CheckCircle className="text-green-400" size={18} />
               <p className="text-sm font-medium text-slate-300">One line. No tech skills needed.</p>
             </div>
             <code className="block bg-slate-950 text-slate-300 p-4 rounded-lg text-sm font-mono break-all border border-slate-800">
-              {`<script src="https://backend.../api/widget/69f7ba.../embed.js" async></script>`}
+              {`<script src="https://backend-production-54fd.up.railway.app/api/widget/69f7ba5f92d4b9cd359e5267/embed.js" async></script>`}
             </code>
           </div>
         </div>
       </section>
 
       {/* Features Bento Grid */}
-      <section className="py-24 px-6 relative">
+      <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-white">
               Three jobs,{" "}
-              <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                done brilliantly
-              </span>
+              <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">done brilliantly</span>
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto mt-3">
               Simple tools that protect your reputation and grow your Google reviews on autopilot.
@@ -411,4 +407,4 @@ export default function LandingPage() {
       </footer>
     </div>
   );
-                }
+}
