@@ -3,27 +3,53 @@ import {
   RocketLaunch, PlayCircle, Brain, ShieldCheck, ChartLineUp, CaretDown,
   Browser, Gauge, ArrowsClockwise, Star, Quote, CheckCircle
 } from "phosphor-react";
-import LocalProofDemoWidget from "../components/LocalProofDemoWidget";
+
+// Simple placeholder while you build your widget
+function WidgetPlaceholder() {
+  return (
+    <div className="p-6 bg-white/10 rounded-xl text-center text-slate-300">
+      ⭐ Rate Us Widget (coming soon)
+    </div>
+  );
+}
+
+function CountUp({ end, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (end === 0) return;
+    let startTime;
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <>{count}</>;
+}
 
 export default function LandingPage() {
   const [demoTab, setDemoTab] = useState("widget");
   const [openFaq, setOpenFaq] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
-  // Sticky nav blur effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Animated stats counter (simple, without IntersectionObserver)
   const statsRef = useRef(null);
   const [animatedStats, setAnimatedStats] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setAnimatedStats(true); },
+      ([entry]) => {
+        if (entry.isIntersecting) setAnimatedStats(true);
+      },
       { threshold: 0.3 }
     );
     if (statsRef.current) observer.observe(statsRef.current);
@@ -40,8 +66,8 @@ export default function LandingPage() {
         <p className="text-slate-400 max-w-md mx-auto">
           Visitors get a one-click rating. Happy → Google. Unhappy → private feedback.
         </p>
-        <div className="mt-6 mx-auto max-w-sm bg-white/70 backdrop-blur-sm rounded-xl shadow-lg p-4">
-          <LocalProofDemoWidget />
+        <div className="mt-6 mx-auto max-w-sm">
+          <WidgetPlaceholder />
         </div>
       </div>
     ),
@@ -52,8 +78,8 @@ export default function LandingPage() {
         <p className="text-slate-400 max-w-md mx-auto">
           All feedback, AI‑drafted responses, and your reputation health in one place.
         </p>
-        <div className="mt-6 p-6 bg-white/50 rounded-xl text-sm text-slate-400 italic">
-          [ Dashboard screenshot coming soon ]
+        <div className="mt-6 p-6 bg-white/5 rounded-xl text-sm text-slate-400 italic">
+          Dashboard screenshot – coming soon
         </div>
       </div>
     ),
@@ -70,7 +96,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-slate-950 text-slate-200 antialiased overflow-x-hidden">
-      {/* ========== STICKY NAV (glass) ========== */}
+      {/* Navigation */}
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
@@ -93,9 +119,8 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ========== HERO ========== */}
+      {/* Hero */}
       <section className="relative pt-32 pb-24 px-6 overflow-hidden">
-        {/* Animated background gradients */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-600/20 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow" />
           <div className="absolute top-0 -right-40 w-96 h-96 bg-emerald-600/20 rounded-full mix-blend-multiply filter blur-3xl animate-float-slow animation-delay-2000" />
@@ -134,7 +159,6 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Code snippet */}
           <div className="mt-12 mx-auto max-w-lg bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-5 rounded-2xl shadow-lg">
             <div className="flex items-center gap-2 mb-3">
               <CheckCircle className="text-green-400" size={18} />
@@ -147,7 +171,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== FEATURES (bento grid) ========== */}
+      {/* Features Bento Grid */}
       <section className="py-24 px-6 relative">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -162,9 +186,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Bento grid layout */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1 - tall */}
             <div className="lg:row-span-2 bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
               <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition">
                 <Brain className="text-blue-400" size={28} />
@@ -174,8 +196,6 @@ export default function LandingPage() {
                 Happy visitors (4‑5 stars) are sent directly to your Google review page. Unhappy ones see a private feedback form — never a public complaint. <span className="text-white">Legally compliant, always.</span>
               </p>
             </div>
-
-            {/* Card 2 */}
             <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-500/20 transition">
                 <ShieldCheck className="text-emerald-400" size={28} />
@@ -185,8 +205,6 @@ export default function LandingPage() {
                 100% compliant with Google & FTC guidelines. We never gate or fake — we route genuine sentiment.
               </p>
             </div>
-
-            {/* Card 3 */}
             <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
               <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition">
                 <ChartLineUp className="text-purple-400" size={28} />
@@ -196,8 +214,6 @@ export default function LandingPage() {
                 See all feedback, AI‑drafted replies, and track your reputation health. No noise, just what matters.
               </p>
             </div>
-
-            {/* Card 4 - wide on large */}
             <div className="md:col-span-2 lg:col-span-1 bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
               <div className="w-12 h-12 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition">
                 <Star className="text-orange-400" size={28} />
@@ -207,8 +223,6 @@ export default function LandingPage() {
                 One line of code. Works with Squarespace, Wix, WordPress, and custom sites. Under 30 seconds.
               </p>
             </div>
-
-            {/* Card 5 */}
             <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
               <div className="w-12 h-12 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-pink-500/20 transition">
                 <Quote className="text-pink-400" size={28} />
@@ -222,7 +236,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== AUDIENCE (badges) ========== */}
+      {/* Audience */}
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-8">
@@ -230,10 +244,7 @@ export default function LandingPage() {
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
             {["🦷 Dentists", "🏠 Home Services", "💇 Salons", "🚗 Auto Shops", "⚖️ Lawyers", "🏥 Medical Practices"].map((badge) => (
-              <span
-                key={badge}
-                className="px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium hover:border-slate-500 hover:bg-slate-700 transition cursor-default"
-              >
+              <span key={badge} className="px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium hover:border-slate-500 hover:bg-slate-700 transition cursor-default">
                 {badge}
               </span>
             ))}
@@ -241,7 +252,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== STATS with animated numbers ========== */}
+      {/* Stats */}
       <section ref={statsRef} className="py-20 px-6 bg-slate-900/30">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-12">The numbers don’t lie</h2>
@@ -266,7 +277,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== DEMO TABS ========== */}
+      {/* Demo Tabs */}
       <section id="demo" className="py-24 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">See LocalProof in action</h2>
@@ -294,7 +305,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== TESTIMONIALS ========== */}
+      {/* Testimonials */}
       <section className="py-24 px-6 bg-slate-900/30">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Loved by local businesses</h2>
@@ -307,9 +318,7 @@ export default function LandingPage() {
             ].map((t, i) => (
               <div key={i} className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-left hover:border-slate-700 transition duration-300">
                 <div className="flex gap-1 mb-4 text-yellow-400">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} weight="fill" size={18} />
-                  ))}
+                  {[...Array(5)].map((_, j) => <Star key={j} weight="fill" size={18} />)}
                 </div>
                 <p className="text-slate-300 mb-6 leading-relaxed italic">"{t.quote}"</p>
                 <div className="flex items-center gap-3 mt-auto">
@@ -327,7 +336,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== FAQ ========== */}
+      {/* FAQ */}
       <section className="py-24 px-6">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12">You ask. We answer.</h2>
@@ -356,15 +365,13 @@ export default function LandingPage() {
                   size={20}
                 />
               </button>
-              {openFaq === idx && (
-                <p className="mt-3 text-slate-400 pr-4">{item.answer}</p>
-              )}
+              {openFaq === idx && <p className="mt-3 text-slate-400 pr-4">{item.answer}</p>}
             </div>
           ))}
         </div>
       </section>
 
-      {/* ========== CTA ========== */}
+      {/* CTA */}
       <section id="cta" className="py-24 px-6 relative">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950 via-slate-950 to-blue-950/30" />
         <div className="max-w-3xl mx-auto text-center relative">
@@ -390,7 +397,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== FOOTER ========== */}
+      {/* Footer */}
       <footer className="border-t border-slate-800 py-10 px-6">
         <div className="max-w-6xl mx-auto text-center text-sm text-slate-500">
           <div className="flex flex-wrap justify-center gap-6 mb-4">
@@ -404,23 +411,4 @@ export default function LandingPage() {
       </footer>
     </div>
   );
-}
-
-// Simple count-up component (no external library)
-function CountUp({ end, duration = 2000 }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (end === 0) return;
-    let startTime;
-    const step = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [end, duration]);
-
-  return <>{count}</>;
-}
+                }
