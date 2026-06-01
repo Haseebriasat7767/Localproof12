@@ -1,13 +1,20 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 
 const router = express.Router();
 
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) return null;
+  return require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
+
 // Create checkout session
 router.post('/checkout', auth, async (req, res) => {
   try {
+    const stripe = getStripe();
+    if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+
     let customerId = req.user.stripeCustomerId;
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -15,7 +22,7 @@ router.post('/checkout', auth, async (req, res) => {
         name: req.user.name
       });
       customerId = customer.id;
-      await User.findByIdAndUpdate(req.user._id, { stripeCustomerId: customerId });
+      await User.findByIdAndUpdate(req.user.id, { stripeCustomerId: customerId });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -35,6 +42,9 @@ router.post('/checkout', auth, async (req, res) => {
 
 // Stripe webhook
 router.post('/webhook', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+
   const sig = req.headers['stripe-signature'];
   let event;
   try {
@@ -62,6 +72,9 @@ router.post('/webhook', async (req, res) => {
 // Get billing portal
 router.post('/portal', auth, async (req, res) => {
   try {
+    const stripe = getStripe();
+    if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+
     const session = await stripe.billingPortal.sessions.create({
       customer: req.user.stripeCustomerId,
       return_url: `${process.env.FRONTEND_URL}/dashboard`

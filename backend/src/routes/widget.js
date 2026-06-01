@@ -1,7 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
 const Feedback = require('../models/Feedback');
-const { Resend } = require('resend');
 
 const router = express.Router();
 
@@ -14,8 +13,8 @@ router.post('/:userId/submit', async (req, res) => {
 
     const isUnhappy = rating <= 3;
 
-    const feedback = await Feedback.create({
-      userId: user._id,
+    await Feedback.create({
+      userId: user.id,
       customerName,
       customerEmail,
       rating,
@@ -23,27 +22,30 @@ router.post('/:userId/submit', async (req, res) => {
       isUnhappy
     });
 
-    // Alert owner immediately if unhappy customer
     if (isUnhappy && process.env.RESEND_API_KEY) {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: 'LocalProof <alerts@localproof.io>',
-        to: user.email,
-        subject: `⚠️ Unhappy customer alert — ${rating}/5 stars`,
-        html: `
-          <h2>Unhappy Customer Alert</h2>
-          <p><strong>Business:</strong> ${user.businessName}</p>
-          <p><strong>Customer:</strong> ${customerName}</p>
-          <p><strong>Rating:</strong> ${rating}/5</p>
-          <p><strong>Comment:</strong> ${comment}</p>
-          <p><strong>Email:</strong> ${customerEmail}</p>
-          <hr/>
-          <p>Reach out to them before they leave a public review!</p>
-        `
-      });
+      try {
+        const { Resend } = require('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: 'LocalProof <alerts@localproof.io>',
+          to: user.email,
+          subject: `Unhappy customer alert — ${rating}/5 stars`,
+          html: `
+            <h2>Unhappy Customer Alert</h2>
+            <p><strong>Business:</strong> ${user.businessName}</p>
+            <p><strong>Customer:</strong> ${customerName}</p>
+            <p><strong>Rating:</strong> ${rating}/5</p>
+            <p><strong>Comment:</strong> ${comment}</p>
+            <p><strong>Email:</strong> ${customerEmail}</p>
+            <hr/>
+            <p>Reach out to them before they leave a public review!</p>
+          `
+        });
+      } catch (emailErr) {
+        console.error('Email send failed:', emailErr.message);
+      }
     }
 
-    // If happy, nudge them to leave a public review
     const response = isUnhappy
       ? { message: "Thank you for your feedback. We'll be in touch shortly." }
       : { message: "Thank you! Would you mind sharing this on Google?", showReviewLink: true };
@@ -54,8 +56,15 @@ router.post('/:userId/submit', async (req, res) => {
   }
 });
 
+// Alias: /feedback endpoint used by the demo widget
+router.post('/:userId/feedback', async (req, res) => {
+  req.url = `/${req.params.userId}/submit`;
+  router.handle(req, res);
+});
+
 // Get widget embed code for business
 router.get('/:userId/embed', async (req, res) => {
+  const apiBase = process.env.FRONTEND_URL || 'http://localhost:3001';
   const embedCode = `
 <script>
 (function() {
@@ -67,7 +76,7 @@ router.get('/:userId/embed', async (req, res) => {
     if (!rating) return;
     var comment = prompt('Any comments? (optional)');
     var name = prompt('Your name? (optional)') || 'Anonymous';
-    fetch('${process.env.FRONTEND_URL || 'https://localproof.io'}/api/widget/${req.params.userId}/submit', {
+    fetch('${apiBase}/api/widget/${req.params.userId}/submit', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ customerName: name, rating: parseInt(rating), comment: comment || '' })

@@ -9,16 +9,13 @@ const router = express.Router();
 router.get('/', auth, async (req, res) => {
   try {
     const { sentiment, replied, platform, page = 1, limit = 20 } = req.query;
-    const filter = { userId: req.user._id };
+    const filter = { userId: req.user.id };
     if (sentiment) filter.sentiment = sentiment;
     if (replied !== undefined) filter.replied = replied === 'true';
     if (platform) filter.platform = platform;
 
-    const reviews = await Review.find(filter)
-      .sort({ date: -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
-
+    const skip = (page - 1) * limit;
+    const reviews = await Review.find(filter, { skip: parseInt(skip), limit: parseInt(limit) });
     const total = await Review.countDocuments(filter);
     res.json({ reviews, total, pages: Math.ceil(total / limit) });
   } catch (err) {
@@ -34,7 +31,7 @@ router.post('/manual', auth, async (req, res) => {
     const { isFake, reasons } = await detectFakeReview({ rating, text });
 
     const review = await Review.create({
-      userId: req.user._id,
+      userId: req.user.id,
       platform,
       reviewId: `manual_${Date.now()}`,
       authorName,
@@ -55,11 +52,11 @@ router.post('/manual', auth, async (req, res) => {
 // Generate AI reply draft
 router.post('/:id/draft', auth, async (req, res) => {
   try {
-    const review = await Review.findOne({ _id: req.params.id, userId: req.user._id });
+    const review = await Review.findOne({ id: req.params.id, userId: req.user.id });
     if (!review) return res.status(404).json({ error: 'Review not found' });
 
     const draft = await generateReplyDraft(review, req.user.businessName, req.user.tone);
-    await Review.findByIdAndUpdate(review._id, { replyDraft: draft });
+    await Review.findByIdAndUpdate(review.id, { replyDraft: draft });
 
     res.json({ draft });
   } catch (err) {
@@ -72,9 +69,8 @@ router.patch('/:id/reply', auth, async (req, res) => {
   try {
     const { replyText } = req.body;
     const review = await Review.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user._id },
-      { replyText, replied: true },
-      { new: true }
+      { id: req.params.id, userId: req.user.id },
+      { replyText, replied: true }
     );
     if (!review) return res.status(404).json({ error: 'Review not found' });
     res.json({ review });
@@ -86,7 +82,7 @@ router.patch('/:id/reply', auth, async (req, res) => {
 // Dashboard stats
 router.get('/stats', auth, async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const total = await Review.countDocuments({ userId });
     const replied = await Review.countDocuments({ userId, replied: true });
     const negative = await Review.countDocuments({ userId, sentiment: 'negative' });

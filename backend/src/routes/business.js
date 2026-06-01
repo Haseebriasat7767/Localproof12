@@ -10,10 +10,9 @@ router.patch('/profile', auth, async (req, res) => {
   try {
     const { businessName, tone } = req.body;
     const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { businessName, tone },
-      { new: true }
-    ).select('-password');
+      req.user.id,
+      { businessName, tone }
+    );
     res.json({ user });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -23,10 +22,10 @@ router.patch('/profile', auth, async (req, res) => {
 // Get unhappy customer alerts
 router.get('/alerts', auth, async (req, res) => {
   try {
-    const alerts = await Feedback.find({
-      userId: req.user._id,
-      isUnhappy: true
-    }).sort({ createdAt: -1 }).limit(50);
+    const alerts = await Feedback.find(
+      { userId: req.user.id, isUnhappy: true },
+      { limit: 50 }
+    );
     res.json({ alerts });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -36,8 +35,10 @@ router.get('/alerts', auth, async (req, res) => {
 // Get all feedback
 router.get('/feedback', auth, async (req, res) => {
   try {
-    const feedback = await Feedback.find({ userId: req.user._id })
-      .sort({ createdAt: -1 }).limit(100);
+    const feedback = await Feedback.find(
+      { userId: req.user.id },
+      { limit: 100 }
+    );
     res.json({ feedback });
   } catch (err) {
     res.status(500).json({ error: err.message });

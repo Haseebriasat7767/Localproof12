@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  RocketLaunch, PlayCircle, Brain, ShieldCheck, ChartLineUp, CaretDown,
-  Browser, Gauge, ArrowsClockwise, Star, Quote, CheckCircle
-} from "phosphor-react";
+  Rocket, Play, Brain, ShieldCheck, TrendingUp, ChevronDown,
+  Globe, BarChart2, RefreshCw, Star, Quote, CheckCircle
+} from "lucide-react";
 
 function WidgetPlaceholder() {
   return (
@@ -56,7 +56,7 @@ export default function LandingPage() {
   const tabContent = {
     widget: (
       <div className="text-center">
-        <Browser className="text-blue-500 text-5xl mx-auto mb-4" weight="duotone" />
+        <Globe className="text-blue-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Widget Preview</h3>
         <p className="text-slate-400 max-w-md mx-auto">Visitors get a one-click rating. Happy → Google. Unhappy → private feedback.</p>
         <div className="mt-6 mx-auto max-w-sm"><WidgetPlaceholder /></div>
@@ -64,7 +64,7 @@ export default function LandingPage() {
     ),
     dashboard: (
       <div className="text-center">
-        <Gauge className="text-blue-500 text-5xl mx-auto mb-4" weight="duotone" />
+        <BarChart2 className="text-blue-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Dashboard View</h3>
         <p className="text-slate-400 max-w-md mx-auto">All feedback, AI‑drafted responses, and your reputation health in one place.</p>
         <div className="mt-6 p-6 bg-white/5 rounded-xl text-sm text-slate-400 italic">Dashboard screenshot – coming soon</div>
@@ -72,7 +72,7 @@ export default function LandingPage() {
     ),
     flow: (
       <div className="text-center">
-        <ArrowsClockwise className="text-blue-500 text-5xl mx-auto mb-4" weight="duotone" />
+        <RefreshCw className="text-blue-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Customer Flow</h3>
         <p className="text-slate-400 max-w-md mx-auto">Visit site → widget pops up → rate → routed to Google Review or private form.</p>
       </div>
@@ -101,12 +101,12 @@ export default function LandingPage() {
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">The <span className="bg-gradient-to-r from-blue-400 via-blue-300 to-emerald-400 bg-clip-text text-transparent">5‑second</span> Google review machine</h1>
           <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mt-6 mb-10 leading-relaxed">Turn happy customers into glowing public reviews. Catch unhappy ones <span className="text-white">privately</span> before they ever touch Google.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#cta" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5"><RocketLaunch className="text-white" size={20} weight="fill" /> Start free in 30 seconds</a>
-            <a href="#demo" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-slate-300 border border-slate-700 hover:bg-slate-800 transition duration-200"><PlayCircle size={20} /> See how it works</a>
+            <a href="#cta" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5"><Rocket className="text-white" size={20} /> Start free in 30 seconds</a>
+            <a href="#demo" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-slate-300 border border-slate-700 hover:bg-slate-800 transition duration-200"><Play size={20} /> See how it works</a>
           </div>
           <div className="mt-12 mx-auto max-w-lg bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-5 rounded-2xl shadow-lg">
             <div className="flex items-center gap-2 mb-3"><CheckCircle className="text-green-400" size={18} /><p className="text-sm font-medium text-slate-300">One line. No tech skills needed.</p></div>
-            <code className="block bg-slate-950 text-slate-300 p-4 rounded-lg text-sm font-mono break-all border border-slate-800">{`<script src="https://backend-production-54fd.up.railway.app/api/widget/69f7ba5f92d4b9cd359e5267/embed.js" async></script>`}</code>
+            <code className="block bg-slate-950 text-slate-300 p-4 rounded-lg text-sm font-mono break-all border border-slate-800">{`<script src="https://localproof.io/api/widget/YOUR_ID/embed.js" async></script>`}</code>
           </div>
         </div>
       </section>
@@ -129,7 +129,7 @@ export default function LandingPage() {
               <p className="text-slate-400 leading-relaxed">100% compliant with Google & FTC guidelines. We never gate or fake — we route genuine sentiment.</p>
             </div>
             <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/80 transition duration-300 hover:border-slate-700 group">
-              <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition"><ChartLineUp className="text-purple-400" size={28} /></div>
+              <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition"><TrendingUp className="text-purple-400" size={28} /></div>
               <h3 className="text-xl font-semibold mb-3">3. Dashboard That Works</h3>
               <p className="text-slate-400 leading-relaxed">See all feedback, AI‑drafted replies, and track your reputation health. No noise, just what matters.</p>
             </div>
@@ -196,7 +196,7 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[ { quote: "Our Google rating went from 3.8 to 4.6 in one month.", author: "Maria K.", role: "Dentist" }, { quote: "I installed it during my lunch break. The free tier alone doubled our reviews.", author: "David L.", role: "Plumber" }, { quote: "The private feedback saved us from a bad public review.", author: "Jasmine R.", role: "Salon Owner" } ].map((t, i) => (
               <div key={i} className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-left hover:border-slate-700 transition duration-300">
-                <div className="flex gap-1 mb-4 text-yellow-400">{[...Array(5)].map((_, j) => <Star key={j} weight="fill" size={18} />)}</div>
+                <div className="flex gap-1 mb-4 text-yellow-400">{[...Array(5)].map((_, j) => <Star key={j} fill="currentColor" size={18} />)}</div>
                 <p className="text-slate-300 mb-6 leading-relaxed italic">"{t.quote}"</p>
                 <div className="flex items-center gap-3 mt-auto">
                   <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg font-bold text-white">{t.author[0]}</div>
@@ -213,7 +213,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-white text-center mb-12">You ask. We answer.</h2>
           {[ { question: "What exactly does my customer see?", answer: "They get a one‑click rating request. If happy (4–5 stars), they're sent to your Google review page. If less satisfied, they land on a private, internal form only you can see." }, { question: "Is this allowed by Google?", answer: "Absolutely. We never fake reviews or filter. We route genuine sentiment — public praise to Google, private feedback to your inbox. Fully compliant with Google & FTC rules." }, { question: "I'm not technical – will I break my website?", answer: "No. One line of code. We have step-by-step guides for Squarespace, Wix, WordPress. And a real human answers if you get stuck." } ].map((item, idx) => (
             <div key={idx} className="border-b border-slate-800 py-5">
-              <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center text-left font-semibold text-lg text-white hover:text-blue-400 transition">{item.question}<CaretDown className={`transform transition duration-200 ${openFaq === idx ? "rotate-180" : ""}`} size={20} /></button>
+              <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center text-left font-semibold text-lg text-white hover:text-blue-400 transition">{item.question}<ChevronDown className={`transform transition duration-200 ${openFaq === idx ? "rotate-180" : ""}`} size={20} /></button>
               {openFaq === idx && <p className="mt-3 text-slate-400 pr-4">{item.answer}</p>}
             </div>
           ))}
@@ -226,7 +226,7 @@ export default function LandingPage() {
           <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium">🎁 Free forever tier</div>
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">Ready to turn happy customers<br/>into <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">public reviews</span>?</h2>
           <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">Get 25 reviews/month, 5 AI drafts, and the smart routing widget – free, no credit card needed. Setup takes 30 seconds.</p>
-          <a href="#" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/60 transition-all hover:-translate-y-0.5"><RocketLaunch weight="fill" size={22} /> Start your free account</a>
+          <a href="/register" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/60 transition-all hover:-translate-y-0.5"><Rocket size={22} /> Start your free account</a>
           <p className="mt-6 text-sm text-slate-500">One‑line install · No credit card · Cancel anytime</p>
         </div>
       </section>
