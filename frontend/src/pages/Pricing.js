@@ -1,51 +1,57 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight, Star, Shield, Zap, Globe } from 'lucide-react';
 
 const features = [
-  'Unlimited review tracking',
-  'AI reply drafts (Claude Haiku)',
-  'Fake review detection',
-  'Unhappy customer alerts (email)',
-  'Embeddable feedback widget',
-  'Weekly reputation digest',
-  'Multi-platform (Google, Yelp)',
-  'Cancel anytime'
+  { icon: Star, text: 'Unlimited review tracking' },
+  { icon: Zap, text: 'AI reply drafts (Claude Haiku)' },
+  { icon: Shield, text: 'Fake review detection' },
+  { icon: Globe, text: 'Embeddable feedback widget' },
+  { icon: CheckCircle, text: 'Unhappy customer alerts (email)' },
+  { icon: CheckCircle, text: 'Weekly reputation digest' },
+  { icon: CheckCircle, text: 'Multi-platform (Google, Yelp)' },
+  { icon: CheckCircle, text: 'Cancel anytime' }
 ];
 
 export default function Pricing() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-16">
-      <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-blue-600 mb-10">
-        <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" /> LocalProof
+    <div className="min-h-screen bg-[#0a0e1a] flex flex-col items-center justify-center px-6 py-16">
+      <Link to="/" className="flex items-center gap-2.5 mb-10">
+        <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" />
+        <span className="text-xl font-bold text-white tracking-tight">LocalProof</span>
       </Link>
-      <h2 className="text-4xl font-bold text-gray-900 text-center mb-3">Simple pricing</h2>
-      <p className="text-gray-500 text-center mb-10">Everything you need to protect your reputation</p>
 
-      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-10 w-full max-w-sm text-center">
-        <p className="text-gray-500 text-sm mb-2">Pro Plan</p>
-        <div className="flex items-end justify-center gap-1 mb-1">
-          <span className="text-5xl font-bold text-gray-900">$49</span>
-          <span className="text-gray-400 mb-2">/month</span>
+      <div className="text-center max-w-xl mb-10">
+        <h2 className="text-4xl font-bold text-white mb-3 tracking-tight">Simple pricing</h2>
+        <p className="text-slate-400">Everything you need to protect your reputation. No hidden fees.</p>
+      </div>
+
+      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-10 w-full max-w-sm text-center hover:border-white/20 transition duration-300">
+        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-6">
+          Pro Plan
         </div>
-        <p className="text-xs text-gray-400 mb-6">Cancel anytime</p>
+        <div className="flex items-end justify-center gap-1 mb-1">
+          <span className="text-5xl font-bold text-white">$49</span>
+          <span className="text-slate-400 mb-2">/month</span>
+        </div>
+        <p className="text-xs text-slate-500 mb-8">14-day free trial · Cancel anytime</p>
 
         <ul className="space-y-3 text-left mb-8">
           {features.map(f => (
-            <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
-              <CheckCircle size={16} className="text-green-500 shrink-0" /> {f}
+            <li key={f.text} className="flex items-center gap-3 text-sm text-slate-300">
+              <f.icon size={16} className="text-blue-400 shrink-0" /> {f.text}
             </li>
           ))}
         </ul>
 
         <Link to="/register"
-          className="block w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 text-center">
-          Get Started
+          className="block w-full bg-white text-[#0a0e1a] py-3.5 rounded-xl font-semibold hover:bg-slate-200 text-center transition-all flex items-center justify-center gap-2">
+          Start free trial <ArrowRight size={16} />
         </Link>
       </div>
 
-      <p className="text-gray-400 text-xs mt-6">
-        Already have an account? <Link to="/login" className="text-blue-600">Sign in</Link>
+      <p className="text-slate-500 text-sm mt-8">
+        Already have an account? <Link to="/login" className="text-white font-medium hover:underline">Sign in</Link>
       </p>
     </div>
   );

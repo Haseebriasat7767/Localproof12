@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, MessageSquare, AlertTriangle, TrendingUp, ArrowRight } from 'lucide-react';
+import { Star, MessageSquare, AlertTriangle, TrendingUp, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { reviews, billing } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -21,76 +21,86 @@ export default function Dashboard() {
     window.location.href = res.data.url;
   };
 
-  if (loading) return <div className="text-gray-500 text-sm">Loading dashboard...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center h-full text-slate-500 text-sm">
+      <div className="w-5 h-5 border-2 border-slate-500 border-t-transparent rounded-full animate-spin mr-2" />
+      Loading dashboard...
+    </div>
+  );
 
   const statCards = [
-    { label: 'Total Reviews', value: stats?.total || 0, icon: Star, color: 'text-yellow-500 bg-yellow-50' },
-    { label: 'Avg Rating', value: stats?.avgRating || '—', icon: TrendingUp, color: 'text-green-500 bg-green-50' },
-    { label: 'Pending Replies', value: stats?.pending || 0, icon: MessageSquare, color: 'text-blue-500 bg-blue-50' },
-    { label: 'Fake Suspected', value: stats?.fake || 0, icon: AlertTriangle, color: 'text-red-500 bg-red-50' }
+    { label: 'Total Reviews', value: stats?.total || 0, icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+    { label: 'Avg Rating', value: stats?.avgRating || '—', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    { label: 'Pending Replies', value: stats?.pending || 0, icon: MessageSquare, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    { label: 'Fake Suspected', value: stats?.fake || 0, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10' }
   ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Welcome, {user?.name} 👋</h2>
-        <p className="text-gray-500 text-sm mt-1">{user?.businessName || 'Your business'} · Reputation Dashboard</p>
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Welcome back, {user?.name}</h2>
+          <p className="text-slate-500 text-sm mt-1">{user?.businessName || 'Your business'} · Reputation Dashboard</p>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-slate-500 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" /> Pro Plan
+        </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5 flex items-center justify-between">
         <div>
-          <p className="font-semibold text-blue-900 text-sm">Pro Plan</p>
-          <p className="text-blue-700 text-xs mt-0.5">$49/month — unlimited AI replies + alerts</p>
+          <p className="font-semibold text-white text-sm">Pro Plan</p>
+          <p className="text-slate-400 text-xs mt-0.5">$49/month — unlimited AI replies + alerts</p>
         </div>
         <button onClick={handleUpgrade}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+          className="bg-white/10 text-white border border-white/10 px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
           Manage
         </button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${color}`}>
-              <Icon size={20} />
+        {statCards.map(({ label, value, icon: Icon, color, bg }) => (
+          <div key={label} className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/[0.05] transition-all">
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${bg}`}>
+              <Icon size={18} className={color} />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
-            <p className="text-xs text-gray-500 mt-1">{label}</p>
+            <p className="text-2xl font-bold text-white">{value}</p>
+            <p className="text-xs text-slate-500 mt-1">{label}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-900">Recent Reviews</h3>
-          <Link to="/reviews" className="text-blue-600 text-sm flex items-center gap-1 hover:underline">
+      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/5">
+          <h3 className="font-semibold text-white">Recent Reviews</h3>
+          <Link to="/reviews" className="text-blue-400 text-sm flex items-center gap-1 hover:text-blue-300 transition">
             View all <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-white/5">
           {recentReviews.length === 0 && (
-            <div className="p-8 text-center text-gray-400 text-sm">
-              No reviews yet. <Link to="/reviews" className="text-blue-600">Add your first review →</Link>
+            <div className="p-8 text-center text-slate-500 text-sm">
+              No reviews yet. <Link to="/reviews" className="text-blue-400 hover:text-blue-300">Add your first review →</Link>
             </div>
           )}
           {recentReviews.map(review => (
-            <div key={review._id} className="p-5 flex items-start gap-4">
+            <div key={review._id} className="p-5 flex items-start gap-4 hover:bg-white/[0.02] transition">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-gray-900 text-sm">{review.authorName}</span>
+                  <span className="font-medium text-white text-sm">{review.authorName}</span>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={12} className={i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'} />
+                      <Star key={i} size={12} className={i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-slate-600 fill-slate-600'} />
                     ))}
                   </div>
                   {review.isFakeSuspected && (
-                    <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">Fake?</span>
+                    <span className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full">Fake?</span>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 line-clamp-2">{review.text || 'No text'}</p>
+                <p className="text-sm text-slate-400 line-clamp-2">{review.text || 'No text'}</p>
               </div>
-              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                review.replied ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                review.replied ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
               }`}>
                 {review.replied ? 'Replied' : 'Pending'}
               </span>
