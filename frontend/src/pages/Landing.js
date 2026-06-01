@@ -84,9 +84,10 @@ export default function LandingPage() {
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 shadow-2xl" : "bg-transparent"}`}>
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
           <div className="flex items-center gap-2 text-2xl font-bold text-white">
-            <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">📍 LocalProof</span>
+            <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" />
+            <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">LocalProof</span>
           </div>
-          <a href="#cta" className="relative group bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5">Get started free</a>
+          <a href="/register" className="relative group bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5">Get started</a>
         </div>
       </nav>
 
@@ -97,11 +98,11 @@ export default function LandingPage() {
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
         <div className="max-w-4xl mx-auto text-center relative">
-          <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium backdrop-blur-sm">🎉 Free forever – no credit card required</div>
+          <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium backdrop-blur-sm">🎉 Pro tools for local businesses</div>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">The <span className="bg-gradient-to-r from-blue-400 via-blue-300 to-emerald-400 bg-clip-text text-transparent">5‑second</span> Google review machine</h1>
           <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mt-6 mb-10 leading-relaxed">Turn happy customers into glowing public reviews. Catch unhappy ones <span className="text-white">privately</span> before they ever touch Google.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#cta" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5"><Rocket className="text-white" size={20} /> Start free in 30 seconds</a>
+            <a href="#cta" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 hover:-translate-y-0.5"><Rocket className="text-white" size={20} /> Get started — $49/mo</a>
             <a href="#demo" className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-slate-300 border border-slate-700 hover:bg-slate-800 transition duration-200"><Play size={20} /> See how it works</a>
           </div>
           <div className="mt-12 mx-auto max-w-lg bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-5 rounded-2xl shadow-lg">
@@ -223,11 +224,11 @@ export default function LandingPage() {
       <section id="cta" className="py-24 px-6 relative">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950 via-slate-950 to-blue-950/30"></div>
         <div className="max-w-3xl mx-auto text-center relative">
-          <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium">🎁 Free forever tier</div>
+          <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium">🎁 Simple pricing</div>
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">Ready to turn happy customers<br/>into <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">public reviews</span>?</h2>
-          <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">Get 25 reviews/month, 5 AI drafts, and the smart routing widget – free, no credit card needed. Setup takes 30 seconds.</p>
-          <a href="/register" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/60 transition-all hover:-translate-y-0.5"><Rocket size={22} /> Start your free account</a>
-          <p className="mt-6 text-sm text-slate-500">One‑line install · No credit card · Cancel anytime</p>
+          <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">Unlimited AI drafts, review tracking, and the smart routing widget — $49/month. Setup takes 30 seconds.</p>
+          <a href="/register" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/60 transition-all hover:-translate-y-0.5"><Rocket size={22} /> Get started — $49/mo</a>
+          <p className="mt-6 text-sm text-slate-500">One‑line install · Cancel anytime</p>
         </div>
       </section>
 

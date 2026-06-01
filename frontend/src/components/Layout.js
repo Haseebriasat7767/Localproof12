@@ -23,7 +23,10 @@ export default function Layout({ children }) {
       {/* Sidebar */}
       <aside className={`${open ? 'flex' : 'hidden'} md:flex flex-col w-64 bg-white border-r border-gray-200 fixed md:static inset-y-0 left-0 z-50`}>
         <div className="p-6 border-b border-gray-100">
-          <h1 className="text-xl font-bold text-blue-600">⭐ LocalProof</h1>
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="LocalProof" className="w-6 h-6" />
+            <h1 className="text-xl font-bold text-blue-600">LocalProof</h1>
+          </div>
           <p className="text-xs text-gray-500 mt-1 truncate">{user?.businessName || user?.name}</p>
           {user?.plan === 'pro' && (
             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full mt-1 inline-block">PRO</span>
@@ -53,7 +56,10 @@ export default function Layout({ children }) {
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
-          <h1 className="text-lg font-bold text-blue-600">⭐ LocalProof</h1>
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="LocalProof" className="w-6 h-6" />
+            <h1 className="text-lg font-bold text-blue-600">LocalProof</h1>
+          </div>
           <button onClick={() => setOpen(!open)}>
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>

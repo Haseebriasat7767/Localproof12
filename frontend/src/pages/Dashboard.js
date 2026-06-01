@@ -37,18 +37,16 @@ export default function Dashboard() {
         <p className="text-gray-500 text-sm mt-1">{user?.businessName || 'Your business'} · Reputation Dashboard</p>
       </div>
 
-      {user?.plan === 'free' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <p className="font-semibold text-blue-900 text-sm">You're on the Free plan</p>
-            <p className="text-blue-700 text-xs mt-0.5">Upgrade to Pro for unlimited AI replies + alerts</p>
-          </div>
-          <button onClick={handleUpgrade}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
-            Upgrade $29/mo
-          </button>
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p className="font-semibold text-blue-900 text-sm">Pro Plan</p>
+          <p className="text-blue-700 text-xs mt-0.5">$49/month — unlimited AI replies + alerts</p>
         </div>
-      )}
+        <button onClick={handleUpgrade}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+          Manage
+        </button>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map(({ label, value, icon: Icon, color }) => (

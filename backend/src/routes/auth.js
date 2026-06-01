@@ -8,7 +8,7 @@ const router = express.Router();
 const signToken = (userId) =>
   jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-// Register
+// Register - all users start on pro plan (paid-only model)
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, businessName } = req.body;
@@ -19,9 +19,11 @@ router.post('/register', async (req, res) => {
     if (exists) return res.status(400).json({ error: 'Email already in use' });
 
     const user = await User.create({ name, email, password, businessName });
+    // All users start on pro (paid-only SaaS)
+    await User.findByIdAndUpdate(user.id, { plan: 'pro' });
     const token = signToken(user.id);
 
-    res.status(201).json({ token, user: { id: user.id, name, email, businessName: user.businessName, plan: user.plan } });
+    res.status(201).json({ token, user: { id: user.id, name, email, businessName: user.businessName, plan: 'pro' } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

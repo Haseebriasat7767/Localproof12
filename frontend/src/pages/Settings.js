@@ -56,19 +56,11 @@ export default function Settings() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h3 className="font-semibold text-gray-900 mb-2">Subscription</h3>
         <p className="text-sm text-gray-500 mb-4">
-          Current plan: <span className={`font-semibold ${user?.plan === 'pro' ? 'text-blue-600' : 'text-gray-700'}`}>
-            {user?.plan === 'pro' ? 'Pro ($29/mo)' : 'Free'}
-          </span>
+          Current plan: <span className="font-semibold text-blue-600">Pro ($49/mo)</span>
         </p>
-        {user?.plan === 'pro' ? (
-          <button onClick={manageSubscription} className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">
-            Manage Subscription
-          </button>
-        ) : (
-          <button onClick={upgrade} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
-            Upgrade to Pro — $29/mo
-          </button>
-        )}
+        <button onClick={manageSubscription} className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">
+          Manage Subscription
+        </button>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">

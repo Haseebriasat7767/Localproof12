@@ -23,7 +23,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-md">
-        <Link to="/" className="text-2xl font-bold text-blue-600 block text-center mb-8">⭐ LocalProof</Link>
+        <Link to="/" className="flex items-center justify-center gap-2 text-2xl font-bold text-blue-600 mb-8">
+          <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" /> LocalProof
+        </Link>
         <h2 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
         <p className="text-gray-500 mb-6 text-sm">Sign in to your account</p>
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">{error}</div>}
@@ -40,7 +42,7 @@ export default function Login() {
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-6">
-          No account? <Link to="/register" className="text-blue-600 font-medium">Create one free</Link>
+          No account? <Link to="/register" className="text-blue-600 font-medium">Create one</Link>
         </p>
       </div>
     </div>

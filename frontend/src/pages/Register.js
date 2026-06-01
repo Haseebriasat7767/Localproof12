@@ -29,18 +29,20 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-md">
-        <Link to="/" className="text-2xl font-bold text-blue-600 block text-center mb-8">⭐ LocalProof</Link>
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Start free trial</h2>
-        <p className="text-gray-500 mb-6 text-sm">14 days free · No credit card needed</p>
+        <Link to="/" className="flex items-center justify-center gap-2 text-2xl font-bold text-blue-600 mb-8">
+          <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" /> LocalProof
+        </Link>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h2>
+        <p className="text-gray-500 mb-6 text-sm">$49/month · Cancel anytime</p>
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">{error}</div>}
         <form onSubmit={submit} className="space-y-4">
           {field('name', 'Full name')}
           {field('email', 'Email address', 'email')}
           {field('password', 'Password (min 8 chars)', 'password')}
-          {field('businessName', 'Business name (optional)')}
+          {field('businessName', 'Business name')}
           <button type="submit" disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50">
-            {loading ? 'Creating account...' : 'Create Free Account'}
+            {loading ? 'Creating account...' : 'Get Started — $49/mo'}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-6">
