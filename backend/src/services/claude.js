@@ -4,6 +4,16 @@ const axios = require('axios');
 const CLAUDE_MODEL = 'claude-haiku-20240307';
 
 async function generateReplyDraft(review, businessName, tone = 'professional') {
+  // Graceful fallback if no API key is configured
+  if (!process.env.CLAUDE_API_KEY) {
+    const fallback = tone === 'professional'
+      ? `Thank you for your feedback! We truly appreciate you taking the time to share your experience with us.`
+      : tone === 'friendly'
+      ? `Thanks so much for your review! We're really glad you enjoyed your experience with us.`
+      : `Hey, thanks for the review! Really appreciate you stopping by and sharing your thoughts.`;
+    return fallback;
+  }
+
   const toneMap = {
     professional: 'professional and courteous',
     friendly: 'warm and friendly',
