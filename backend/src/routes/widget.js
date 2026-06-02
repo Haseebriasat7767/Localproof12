@@ -64,13 +64,13 @@ router.post('/:userId/feedback', async (req, res) => {
 
 // Get widget embed code for business
 router.get('/:userId/embed', async (req, res) => {
-  const apiBase = process.env.FRONTEND_URL || 'http://localhost:3001';
+  const apiBase = process.env.BACKEND_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
   const embedCode = `
 <script>
 (function() {
   var btn = document.createElement('button');
   btn.innerHTML = '⭐ Rate Us';
-  btn.style = 'position:fixed;bottom:20px;right:20px;background:#2563eb;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;z-index:9999;';
+  btn.style = 'position:fixed;bottom:20px;right:20px;background:#D97706;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;z-index:9999;';
   btn.onclick = function() {
     var rating = prompt('How would you rate us? (1-5)');
     if (!rating) return;

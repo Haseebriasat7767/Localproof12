@@ -55,7 +55,7 @@ export default function LandingPage() {
   const tabContent = {
     widget: (
       <div className="text-center">
-        <Globe className="text-blue-500 mx-auto mb-4" size={48} />
+        <Globe className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Widget Preview</h3>
         <p className="text-slate-400 max-w-md mx-auto">Visitors get a one-click rating. Happy → Google. Unhappy → private feedback.</p>
         <div className="mt-6 mx-auto max-w-sm">
@@ -69,7 +69,7 @@ export default function LandingPage() {
     ),
     dashboard: (
       <div className="text-center">
-        <BarChart2 className="text-blue-500 mx-auto mb-4" size={48} />
+        <BarChart2 className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Dashboard View</h3>
         <p className="text-slate-400 max-w-md mx-auto">All feedback, AI-drafted responses, and your reputation health in one place.</p>
         <div className="mt-6 p-6 bg-white/5 rounded-xl text-sm text-slate-400 italic border border-white/10">
@@ -79,7 +79,7 @@ export default function LandingPage() {
     ),
     flow: (
       <div className="text-center">
-        <RefreshCw className="text-blue-500 mx-auto mb-4" size={48} />
+        <RefreshCw className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Customer Flow</h3>
         <p className="text-slate-400 max-w-md mx-auto">Visit site → widget pops up → rate → routed to Google Review or private form.</p>
       </div>
@@ -110,7 +110,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full mix-blend-screen filter blur-[120px]" />
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-brand-500/10 rounded-full mix-blend-screen filter blur-[120px]" />
           <div className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-emerald-500/10 rounded-full mix-blend-screen filter blur-[100px]" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full mix-blend-screen filter blur-[150px]" />
         </div>
@@ -124,7 +124,7 @@ export default function LandingPage() {
           <FadeIn delay={100}>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-white">
               Turn happy customers into<br />
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">5-star reviews</span>
+              <span className="bg-gradient-to-r from-brand-500 via-brand-300 to-success-400 bg-clip-text text-transparent">5-star reviews</span>
             </h1>
           </FadeIn>
           <FadeIn delay={200}>
@@ -180,12 +180,12 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FadeIn delay={0}>
               <div className="lg:row-span-2 bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/[0.05] transition duration-300 hover:border-white/20 group">
-                <div className="w-11 h-11 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition border border-blue-500/20">
-                  <Brain className="text-blue-400" size={24} />
+                <div className="w-11 h-11 bg-brand-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-500/20 transition border border-brand-500/20">
+                  <Brain className="text-brand-500" size={24} />
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-white">Smart Review Routing</h3>
                 <p className="text-slate-400 leading-relaxed text-sm">Happy visitors (4-5 stars) are sent directly to your Google review page. Unhappy ones see a private feedback form — never a public complaint.</p>
-                <div className="mt-6 flex items-center gap-2 text-sm text-blue-400">
+                <div className="mt-6 flex items-center gap-2 text-sm text-brand-500">
                   <CheckCircle size={14} /> <span>Google & FTC compliant</span>
                 </div>
               </div>
@@ -333,9 +333,9 @@ export default function LandingPage() {
           ].map((item, idx) => (
             <FadeIn key={idx} delay={idx * 100}>
               <div className="border-b border-white/10 py-5">
-                <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center text-left font-semibold text-base text-white hover:text-blue-400 transition">
+                <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center text-left font-semibold text-base text-white hover:text-brand-500 transition">
                   {item.question}
-                  <ChevronDown className={`transform transition duration-300 ${openFaq === idx ? "rotate-180 text-blue-400" : "text-slate-500"}`} size={20} />
+                  <ChevronDown className={`transform transition duration-300 ${openFaq === idx ? "rotate-180 text-brand-500" : "text-slate-500"}`} size={20} />
                 </button>
                 {openFaq === idx && (
                   <p className="mt-3 text-slate-400 text-sm leading-relaxed pr-8">{item.answer}</p>
@@ -348,15 +348,15 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section id="pricing" className="py-24 px-6 relative">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0a0e1a] via-[#0a0e1a] to-blue-950/20" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0a0e1a] via-[#0a0e1a] to-brand-900/20" />
         <div className="max-w-3xl mx-auto text-center relative">
           <FadeIn>
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium">
-              <span className="text-blue-400">Simple pricing</span>
+              <span className="text-brand-500">Simple pricing</span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
               Ready to grow your<br />
-              <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Google reviews?</span>
+              <span className="bg-gradient-to-r from-brand-500 to-success-400 bg-clip-text text-transparent">Google reviews?</span>
             </h2>
             <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">
               Unlimited AI drafts, review tracking, and smart routing widget — $49/month. Setup takes 30 seconds.

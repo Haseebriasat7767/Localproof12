@@ -45,6 +45,16 @@ The following secrets need to be configured for full functionality:
 - CORS is set to `origin: true` to allow the Replit proxy to work in development
 - Frontend uses `DANGEROUSLY_DISABLE_HOST_CHECK=true` and `HOST=0.0.0.0` for Replit compatibility
 
+## Brand Identity
+- **Name**: LocalProof
+- **Concept**: "The Forge" — where raw feedback is refined into pure reputation gold
+- **Primary Color**: Amber (#D97706 → #F59E0B) — warm, bold, powerful
+- **Accent**: Emerald (#10B981) — growth, success
+- **Background**: Deep charcoal (#0C0C0E) — premium, dark
+- **Typography**: Plus Jakarta Sans (display) + Inter (body)
+- **Personality**: Bold, confident, empowering. Like a coach who knows you can win.
+- **No blue** — deliberately warm amber to stand apart from competitors
+
 ## User Preferences
 - Keep code clean and maintainable
 - Functional software over mocked data

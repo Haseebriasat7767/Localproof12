@@ -57,28 +57,28 @@ export default function Register() {
             <div>
               <label className="text-sm text-slate-400 mb-1.5 block">Full name</label>
               <input type="text" required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 placeholder="John Smith"
                 value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
             <div>
               <label className="text-sm text-slate-400 mb-1.5 block">Email address</label>
               <input type="email" required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 placeholder="you@company.com"
                 value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
             </div>
             <div>
               <label className="text-sm text-slate-400 mb-1.5 block">Password</label>
               <input type="password" required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 placeholder="Min 8 characters"
                 value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
             </div>
             <div>
               <label className="text-sm text-slate-400 mb-1.5 block">Business name</label>
               <input type="text"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 placeholder="Your Business"
                 value={form.businessName} onChange={e => setForm({ ...form, businessName: e.target.value })} />
             </div>

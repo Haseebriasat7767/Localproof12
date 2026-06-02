@@ -31,7 +31,7 @@ export default function Dashboard() {
   const statCards = [
     { label: 'Total Reviews', value: stats?.total || 0, icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
     { label: 'Avg Rating', value: stats?.avgRating || '—', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { label: 'Pending Replies', value: stats?.pending || 0, icon: MessageSquare, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    { label: 'Pending Replies', value: stats?.pending || 0, icon: MessageSquare, color: 'text-brand-500', bg: 'bg-brand-500/10' },
     { label: 'Fake Suspected', value: stats?.fake || 0, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10' }
   ];
 
@@ -78,14 +78,14 @@ export default function Dashboard() {
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl">
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <h3 className="font-semibold text-white">Recent Reviews</h3>
-          <Link to="/reviews" className="text-blue-400 text-sm flex items-center gap-1 hover:text-blue-300 transition">
+          <Link to="/reviews" className="text-brand-500 text-sm flex items-center gap-1 hover:text-brand-400 transition">
             View all <ArrowRight size={14} />
           </Link>
         </div>
         <div className="divide-y divide-white/5">
           {recentReviews.length === 0 && (
             <div className="p-8 text-center text-slate-500 text-sm">
-              No reviews yet. <Link to="/reviews" className="text-blue-400 hover:text-blue-300">Add your first review →</Link>
+              No reviews yet. <Link to="/reviews" className="text-brand-500 hover:text-brand-400">Add your first review →</Link>
             </div>
           )}
           {recentReviews.map(review => (

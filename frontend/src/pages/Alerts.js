@@ -39,7 +39,7 @@ export default function Alerts() {
       {/* Embed code */}
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Code size={18} className="text-blue-400" />
+          <Code size={18} className="text-brand-500" />
           <h3 className="font-semibold text-white">Feedback Widget</h3>
         </div>
         <p className="text-sm text-slate-400 mb-3">
@@ -73,7 +73,7 @@ export default function Alerts() {
                 <div>
                   <p className="font-medium text-white text-sm">{alert.customerName}</p>
                   {alert.customerEmail && (
-                    <a href={`mailto:${alert.customerEmail}`} className="text-xs text-blue-400 hover:text-blue-300 transition">
+                    <a href={`mailto:${alert.customerEmail}`} className="text-xs text-brand-500 hover:text-brand-400 transition">
                       {alert.customerEmail}
                     </a>
                   )}

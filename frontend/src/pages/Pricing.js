@@ -27,7 +27,7 @@ export default function Pricing() {
       </div>
 
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-10 w-full max-w-sm text-center hover:border-white/20 transition duration-300">
-        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-6">
+        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-500 text-xs font-semibold mb-6">
           Pro Plan
         </div>
         <div className="flex items-end justify-center gap-1 mb-1">
@@ -39,7 +39,7 @@ export default function Pricing() {
         <ul className="space-y-3 text-left mb-8">
           {features.map(f => (
             <li key={f.text} className="flex items-center gap-3 text-sm text-slate-300">
-              <f.icon size={16} className="text-blue-400 shrink-0" /> {f.text}
+              <f.icon size={16} className="text-brand-500 shrink-0" /> {f.text}
             </li>
           ))}
         </ul>

@@ -46,7 +46,7 @@ export default function Settings() {
           <div>
             <label className="text-sm font-medium text-slate-400 block mb-1.5">Business Name</label>
             <input
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
               value={form.businessName} onChange={e => setForm({ ...form, businessName: e.target.value })} />
           </div>
           <div>
@@ -59,9 +59,9 @@ export default function Settings() {
                   <input type="radio" name="tone" value={t.value} className="sr-only"
                     checked={form.tone === t.value} onChange={e => setForm({ ...form, tone: e.target.value })} />
                   <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                    form.tone === t.value ? 'border-blue-400' : 'border-slate-500'
+                    form.tone === t.value ? 'border-brand-500' : 'border-slate-500'
                   }`}>
-                    {form.tone === t.value && <div className="w-2 h-2 rounded-full bg-blue-400" />}
+                    {form.tone === t.value && <div className="w-2 h-2 rounded-full bg-brand-500" />}
                   </div>
                   <div>
                     <div className="text-sm font-medium text-white">{t.label}</div>

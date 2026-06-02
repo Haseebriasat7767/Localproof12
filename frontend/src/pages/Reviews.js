@@ -86,20 +86,20 @@ export default function Reviews() {
             </div>
             <form onSubmit={addReview} className="space-y-3">
               <input placeholder="Customer name" required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 value={addForm.authorName} onChange={e => setAddForm({ ...addForm, authorName: e.target.value })} />
-              <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 transition"
+              <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition"
                 value={addForm.platform} onChange={e => setAddForm({ ...addForm, platform: e.target.value })}>
                 <option value="google" className="bg-[#0d1221]">Google</option>
                 <option value="yelp" className="bg-[#0d1221]">Yelp</option>
                 <option value="manual" className="bg-[#0d1221]">Other</option>
               </select>
-              <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 transition"
+              <select className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500/50 transition"
                 value={addForm.rating} onChange={e => setAddForm({ ...addForm, rating: Number(e.target.value) })}>
                 {[5,4,3,2,1].map(n => <option key={n} value={n} className="bg-[#0d1221]">{n} Star{n > 1 ? 's' : ''}</option>)}
               </select>
               <textarea placeholder="Review text..." rows={3} required
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                 value={addForm.text} onChange={e => setAddForm({ ...addForm, text: e.target.value })} />
               <button type="submit" className="w-full bg-white text-[#0a0e1a] py-2.5 rounded-lg font-semibold text-sm hover:bg-slate-200 transition">
                 Add Review
@@ -165,13 +165,13 @@ export default function Reviews() {
                 <div className="space-y-2">
                   {editReply[review._id] && (
                     <textarea rows={3}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
                       value={editReply[review._id]}
                       onChange={e => setEditReply(r => ({ ...r, [review._id]: e.target.value }))} />
                   )}
                   <div className="flex gap-2">
                     <button onClick={() => generateDraft(review._id)} disabled={generating[review._id]}
-                      className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-500/20 transition disabled:opacity-50">
+                      className="flex items-center gap-1.5 bg-brand-500/10 text-brand-500 border border-brand-500/20 px-3 py-2 rounded-lg text-xs font-medium hover:bg-brand-500/20 transition disabled:opacity-50">
                       <Zap size={12} /> {generating[review._id] ? 'Generating...' : 'AI Draft'}
                     </button>
                     {editReply[review._id] && (
