@@ -51,6 +51,11 @@ export default function Dashboard() {
         <div>
           <p className="font-semibold text-white text-sm">Pro Plan</p>
           <p className="text-slate-400 text-xs mt-0.5">$49/month — unlimited AI replies + alerts</p>
+          {user?.trialEndsAt && !user?.stripeSubscriptionId && (
+            <p className="text-emerald-400 text-xs mt-1">
+              Trial ends: {new Date(user.trialEndsAt).toLocaleDateString()}
+            </p>
+          )}
         </div>
         <button onClick={handleUpgrade}
           className="bg-white/10 text-white border border-white/10 px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">

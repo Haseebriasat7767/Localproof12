@@ -362,9 +362,9 @@ export default function LandingPage() {
               Unlimited AI drafts, review tracking, and smart routing widget — $49/month. Setup takes 30 seconds.
             </p>
             <a href="/register" className="inline-flex items-center gap-2 bg-white text-[#0a0e1a] px-10 py-4 rounded-full font-semibold text-lg hover:bg-slate-200 transition-all shadow-xl shadow-white/10">
-              Get started — $49/mo <ArrowRight size={20} />
+              Start free trial <ArrowRight size={20} />
             </a>
-            <p className="mt-6 text-sm text-slate-500">14-day free trial · Cancel anytime · No credit card required</p>
+            <p className="mt-6 text-sm text-slate-500">14-day free trial · $49/month after trial ends · Cancel anytime</p>
           </FadeIn>
         </div>
       </section>

@@ -37,6 +37,10 @@ export default function Login() {
           <h2 className="text-2xl font-bold text-white mb-1">Welcome back</h2>
           <p className="text-slate-400 mb-8 text-sm">Sign in to your account</p>
 
+          <p className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2 mb-6 text-center">
+            All accounts start with a 14-day free trial. No credit card required.
+          </p>
+
           {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-sm mb-4">{error}</div>}
 
           <form onSubmit={submit} className="space-y-4">

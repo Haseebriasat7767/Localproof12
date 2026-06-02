@@ -12,6 +12,7 @@ export const auth = {
   register: (data) => API.post('/auth/register', data),
   login: (data) => API.post('/auth/login', data),
   me: () => API.get('/auth/me'),
+  trial: () => API.get('/auth/trial'),
   updateTone: (tone) => API.patch('/auth/tone', { tone })
 };
 

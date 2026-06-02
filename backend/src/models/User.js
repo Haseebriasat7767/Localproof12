@@ -74,6 +74,7 @@ const User = {
       googleConnected: row.google_connected,
       googleTokens: row.google_tokens,
       tone: row.tone,
+      trialEndsAt: row.trial_ends_at,
       createdAt: row.created_at
     };
     if (includePassword) obj.password = row.password;

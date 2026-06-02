@@ -84,6 +84,19 @@ export default function Settings() {
         <p className="text-sm text-slate-400 mb-4">
           Current plan: <span className="font-semibold text-white">Pro ($49/mo)</span>
         </p>
+        {user?.trialEndsAt && !user?.stripeSubscriptionId && (
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-4">
+            <p className="text-sm text-emerald-400 font-medium">
+              Free trial active until {new Date(user.trialEndsAt).toLocaleDateString()}
+            </p>
+            <p className="text-xs text-emerald-400/70 mt-1">
+              You'll be billed $49 on {new Date(user.trialEndsAt).toLocaleDateString()}. Cancel anytime before.
+            </p>
+          </div>
+        )}
+        {user?.stripeSubscriptionId && (
+          <p className="text-xs text-slate-500 mb-4">Subscription active — paid via Stripe</p>
+        )}
         <button onClick={manageSubscription}
           className="bg-white/10 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
           Manage Subscription

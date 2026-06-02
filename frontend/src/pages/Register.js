@@ -22,9 +22,9 @@ export default function Register() {
   };
 
   const benefits = [
-    '14-day free trial',
-    'No credit card required',
-    'Cancel anytime'
+    '14-day free trial — no credit card',
+    'Pay $49 only after trial ends',
+    'Cancel anytime before billing'
   ];
 
   return (
@@ -41,7 +41,7 @@ export default function Register() {
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-1">Create your account</h2>
-          <p className="text-slate-400 mb-6 text-sm">$49/month · Cancel anytime</p>
+          <p className="text-slate-400 mb-6 text-sm">14-day free trial · $49/month after</p>
 
           <div className="flex flex-wrap gap-2 mb-6">
             {benefits.map(b => (
@@ -84,7 +84,7 @@ export default function Register() {
             </div>
             <button type="submit" disabled={loading}
               className="w-full bg-white text-[#0a0e1a] py-3 rounded-lg font-semibold hover:bg-slate-200 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
-              {loading ? 'Creating account...' : <>Get Started — $49/mo <ArrowRight size={16} /></>}
+              {loading ? 'Creating account...' : <>Start Free Trial <ArrowRight size={16} /></>}
             </button>
           </form>
 

@@ -23,7 +23,8 @@ router.post('/register', async (req, res) => {
     await User.findByIdAndUpdate(user.id, { plan: 'pro' });
     const token = signToken(user.id);
 
-    res.status(201).json({ token, user: { id: user.id, name, email, businessName: user.businessName, plan: 'pro' } });
+    const fullUser = await User.findById(user.id);
+    res.status(201).json({ token, user: { id: user.id, name, email, businessName: user.businessName, plan: 'pro', trialEndsAt: fullUser.trialEndsAt } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -40,7 +41,7 @@ router.post('/login', async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
 
     const token = signToken(user.id);
-    res.json({ token, user: { id: user.id, name: user.name, email, businessName: user.businessName, plan: user.plan } });
+    res.json({ token, user: { id: user.id, name: user.name, email, businessName: user.businessName, plan: user.plan, trialEndsAt: user.trialEndsAt } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -49,6 +50,22 @@ router.post('/login', async (req, res) => {
 // Get current user
 router.get('/me', authMiddleware, async (req, res) => {
   res.json({ user: req.user });
+});
+
+// Get trial status
+router.get('/trial', authMiddleware, async (req, res) => {
+  const now = new Date();
+  const trialEnd = new Date(req.user.trialEndsAt);
+  const trialExpired = trialEnd < now;
+  const hasPaid = !!(req.user.plan === 'pro' && req.user.stripeSubscriptionId);
+  const daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24)));
+  res.json({
+    trialEndsAt: req.user.trialEndsAt,
+    trialExpired,
+    hasPaid,
+    daysLeft,
+    isActive: !trialExpired || hasPaid
+  });
 });
 
 // Update tone preference

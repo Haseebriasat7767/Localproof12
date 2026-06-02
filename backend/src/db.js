@@ -19,6 +19,7 @@ async function initDb() {
       google_connected BOOLEAN DEFAULT false,
       google_tokens JSONB DEFAULT NULL,
       tone VARCHAR(50) DEFAULT 'professional',
+      trial_ends_at TIMESTAMP DEFAULT NOW() + INTERVAL '14 days',
       created_at TIMESTAMP DEFAULT NOW()
     );
 

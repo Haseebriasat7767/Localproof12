@@ -34,7 +34,7 @@ export default function Pricing() {
           <span className="text-5xl font-bold text-white">$49</span>
           <span className="text-slate-400 mb-2">/month</span>
         </div>
-        <p className="text-xs text-slate-500 mb-8">14-day free trial · Cancel anytime</p>
+        <p className="text-xs text-slate-500 mb-8">14-day free trial · No credit card · Pay after trial</p>
 
         <ul className="space-y-3 text-left mb-8">
           {features.map(f => (
