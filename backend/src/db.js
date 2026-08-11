@@ -54,6 +54,11 @@ async function initDb() {
       source VARCHAR(50) DEFAULT 'widget',
       created_at TIMESTAMP DEFAULT NOW()
     );
+
+    CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews(user_id);
+    CREATE INDEX IF NOT EXISTS idx_reviews_user_date ON reviews(user_id, date DESC);
+    CREATE INDEX IF NOT EXISTS idx_reviews_user_platform ON reviews(user_id, platform);
+    CREATE INDEX IF NOT EXISTS idx_feedback_user_created ON feedback(user_id, created_at DESC);
   `);
   console.log('Database schema initialized');
 }
