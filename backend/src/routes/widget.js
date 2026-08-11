@@ -1,24 +1,68 @@
 const express = require('express');
 const User = require('../models/User');
 const Feedback = require('../models/Feedback');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
-// Public widget endpoint — no auth needed (used on client websites)
-router.post('/:userId/submit', async (req, res) => {
+const widgetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+});
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function validateInput({ customerName, customerEmail, rating, comment }) {
+  const parsedRating = Number(rating);
+  if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+    return { error: 'Rating must be an integer between 1 and 5' };
+  }
+
+  if (customerName != null && String(customerName).length > 100) {
+    return { error: 'Customer name is too long' };
+  }
+
+  if (customerEmail != null && String(customerEmail).length > 254) {
+    return { error: 'Customer email is too long' };
+  }
+
+  if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(customerEmail))) {
+    return { error: 'Invalid customer email' };
+  }
+
+  if (comment != null && String(comment).length > 2000) {
+    return { error: 'Comment is too long' };
+  }
+
+  return { rating: parsedRating };
+}
+
+// Public widget endpoint — protected against basic abuse, but intentionally unauthenticated.
+router.post('/:userId/submit', widgetLimiter, async (req, res) => {
   try {
-    const { customerName, customerEmail, rating, comment } = req.body;
+    const { customerName, customerEmail, rating, comment } = req.body || {};
+    const validation = validateInput({ customerName, customerEmail, rating, comment });
+    if (validation.error) return res.status(400).json({ error: validation.error });
+
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: 'Business not found' });
 
-    const isUnhappy = rating <= 3;
+    const normalizedRating = validation.rating;
+    const isUnhappy = normalizedRating <= 3;
 
     await Feedback.create({
       userId: user.id,
-      customerName,
-      customerEmail,
-      rating,
-      comment,
+      customerName: customerName ? String(customerName).trim() : 'Anonymous',
+      customerEmail: customerEmail ? String(customerEmail).trim().toLowerCase() : null,
+      rating: normalizedRating,
+      comment: comment ? String(comment).trim() : '',
       isUnhappy
     });
 
@@ -29,16 +73,16 @@ router.post('/:userId/submit', async (req, res) => {
         await resend.emails.send({
           from: 'LocalProof <alerts@localproof.io>',
           to: user.email,
-          subject: `Unhappy customer alert — ${rating}/5 stars`,
+          subject: `Unhappy customer alert — ${normalizedRating}/5 stars`,
           html: `
             <h2>Unhappy Customer Alert</h2>
-            <p><strong>Business:</strong> ${user.businessName}</p>
-            <p><strong>Customer:</strong> ${customerName}</p>
-            <p><strong>Rating:</strong> ${rating}/5</p>
-            <p><strong>Comment:</strong> ${comment}</p>
-            <p><strong>Email:</strong> ${customerEmail}</p>
+            <p><strong>Business:</strong> ${escapeHtml(user.businessName)}</p>
+            <p><strong>Customer:</strong> ${escapeHtml(customerName || 'Anonymous')}</p>
+            <p><strong>Rating:</strong> ${normalizedRating}/5</p>
+            <p><strong>Comment:</strong> ${escapeHtml(comment || '')}</p>
+            <p><strong>Email:</strong> ${escapeHtml(customerEmail || '')}</p>
             <hr/>
-            <p>Reach out to them before they leave a public review!</p>
+            <p>Reach out to them promptly.</p>
           `
         });
       } catch (emailErr) {
@@ -52,12 +96,13 @@ router.post('/:userId/submit', async (req, res) => {
 
     res.json(response);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Widget submission failed:', err);
+    res.status(500).json({ error: 'Unable to submit feedback' });
   }
 });
 
 // Alias: /feedback endpoint used by the demo widget
-router.post('/:userId/feedback', async (req, res) => {
+router.post('/:userId/feedback', widgetLimiter, async (req, res) => {
   req.url = `/${req.params.userId}/submit`;
   router.handle(req, res);
 });
@@ -76,11 +121,16 @@ router.get('/:userId/embed', async (req, res) => {
     if (!rating) return;
     var comment = prompt('Any comments? (optional)');
     var name = prompt('Your name? (optional)') || 'Anonymous';
+    var parsedRating = Number.parseInt(rating, 10);
+    if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      alert('Please enter a rating from 1 to 5.');
+      return;
+    }
     fetch('${apiBase}/api/widget/${req.params.userId}/submit', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ customerName: name, rating: parseInt(rating), comment: comment || '' })
-    }).then(r => r.json()).then(d => alert(d.message));
+      body: JSON.stringify({ customerName: name, rating: parsedRating, comment: comment || '' })
+    }).then(r => r.json()).then(d => alert(d.message || d.error || 'Thank you!'));
   };
   document.body.appendChild(btn);
 })();
