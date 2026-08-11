@@ -10,16 +10,25 @@ module.exports = async (req, res, next) => {
     const user = await User.findById(decoded.userId);
     if (!user) return res.status(401).json({ error: 'User not found' });
 
-    // Check if trial has expired
     const now = new Date();
-    const trialEnd = new Date(user.trialEndsAt);
+    const trialEnd = user.trialEndsAt ? new Date(user.trialEndsAt) : new Date(0);
     const trialExpired = trialEnd < now;
-    const hasPaid = !!(user.plan === 'pro' && user.stripeSubscriptionId);
-    user.isActive = !trialExpired || hasPaid;
-    user.trialExpired = trialExpired;
-    user.daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24)));
+    const hasPaid = user.plan === 'pro' && !!user.stripeSubscriptionId;
+    const isActive = !trialExpired || hasPaid;
+    const daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24)));
 
     req.user = user;
+    req.auth = { isActive, trialExpired, hasPaid, daysLeft };
+
+    if (!isActive) {
+      return res.status(402).json({
+        error: 'Trial expired',
+        code: 'TRIAL_EXPIRED',
+        trialExpired: true,
+        daysLeft: 0
+      });
+    }
+
     next();
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
