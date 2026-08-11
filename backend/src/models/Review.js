@@ -10,7 +10,7 @@ const Review = {
     return Review._format(rows[0]);
   },
 
-  async find(filter = {}, { sort, skip, limit } = {}) {
+  async find(filter = {}, { sort = '-date', skip = 0, limit } = {}) {
     let query = 'SELECT * FROM reviews WHERE 1=1';
     const values = [];
     let i = 1;
@@ -21,15 +21,11 @@ const Review = {
     if (filter.platform !== undefined) { query += ` AND platform = $${i++}`; values.push(filter.platform); }
     if (filter.isFakeSuspected !== undefined) { query += ` AND is_fake_suspected = $${i++}`; values.push(filter.isFakeSuspected); }
 
-    if (sort) {
-      const col = sort === '-date' || sort?.date === -1 ? 'date DESC' : 'date DESC';
-      query += ` ORDER BY ${col}`;
-    } else {
-      query += ' ORDER BY date DESC';
-    }
+    const sortMap = { '-date': 'date DESC', date: 'date ASC', newest: 'date DESC', oldest: 'date ASC' };
+    query += ` ORDER BY ${sortMap[sort] || 'date DESC'}`;
 
-    if (skip) { query += ` OFFSET $${i++}`; values.push(skip); }
-    if (limit) { query += ` LIMIT $${i++}`; values.push(limit); }
+    if (skip > 0) { query += ` OFFSET $${i++}`; values.push(Math.floor(skip)); }
+    if (limit !== undefined) { query += ` LIMIT $${i++}`; values.push(Math.min(100, Math.max(1, Math.floor(limit)))); }
 
     const { rows } = await pool.query(query, values);
     return rows.map(Review._format);
@@ -48,6 +44,7 @@ const Review = {
     if (filter.userId !== undefined) { query += ` AND user_id = $${i++}`; values.push(filter.userId); }
     if (filter.sentiment !== undefined) { query += ` AND sentiment = $${i++}`; values.push(filter.sentiment); }
     if (filter.replied !== undefined) { query += ` AND replied = $${i++}`; values.push(filter.replied); }
+    if (filter.platform !== undefined) { query += ` AND platform = $${i++}`; values.push(filter.platform); }
     if (filter.isFakeSuspected !== undefined) { query += ` AND is_fake_suspected = $${i++}`; values.push(filter.isFakeSuspected); }
 
     const { rows } = await pool.query(query, values);
@@ -68,12 +65,14 @@ const Review = {
     };
 
     for (const [key, val] of Object.entries(updates)) {
-      const col = colMap[key] || key;
+      const col = colMap[key];
+      if (!col) throw new Error(`Invalid review update field: ${key}`);
       fields.push(`${col} = $${i++}`);
       values.push(val);
     }
-    values.push(id);
+    if (!fields.length) return Review.findOne({ id });
 
+    values.push(id);
     const { rows } = await pool.query(
       `UPDATE reviews SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`,
       values
@@ -82,9 +81,46 @@ const Review = {
   },
 
   async findOneAndUpdate(filter, updates) {
-    const review = await Review.findOne(filter);
-    if (!review) return null;
-    return Review.findByIdAndUpdate(review.id, updates);
+    const fields = [];
+    const values = [];
+    const conditions = [];
+    let i = 1;
+
+    const colMap = {
+      replyDraft: 'reply_draft',
+      replyText: 'reply_text',
+      replied: 'replied',
+      sentiment: 'sentiment',
+      isFakeSuspected: 'is_fake_suspected'
+    };
+    const filterMap = {
+      id: 'id',
+      userId: 'user_id',
+      sentiment: 'sentiment',
+      replied: 'replied',
+      platform: 'platform',
+      isFakeSuspected: 'is_fake_suspected'
+    };
+
+    for (const [key, val] of Object.entries(updates)) {
+      const col = colMap[key];
+      if (!col) throw new Error(`Invalid review update field: ${key}`);
+      fields.push(`${col} = $${i++}`);
+      values.push(val);
+    }
+    for (const [key, val] of Object.entries(filter)) {
+      const col = filterMap[key];
+      if (!col) throw new Error(`Invalid review filter field: ${key}`);
+      conditions.push(`${col} = $${i++}`);
+      values.push(val);
+    }
+    if (!fields.length || !conditions.length) return null;
+
+    const { rows } = await pool.query(
+      `UPDATE reviews SET ${fields.join(', ')} WHERE ${conditions.join(' AND ')} RETURNING *`,
+      values
+    );
+    return rows[0] ? Review._format(rows[0]) : null;
   },
 
   async aggregate(pipeline) {
