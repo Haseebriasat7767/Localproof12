@@ -1,11 +1,12 @@
 const axios = require('axios');
 
-// Uses Claude Haiku (cheapest model) to save API costs
-const CLAUDE_MODEL = 'claude-haiku-20240307';
+// DeepSeek is OpenAI-compatible and keeps the AI reply feature independent of Claude.
+const DEEPSEEK_MODEL = 'deepseek-chat';
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
 
 async function generateReplyDraft(review, businessName, tone = 'professional') {
-  // Graceful fallback if no API key is configured
-  if (!process.env.CLAUDE_API_KEY) {
+  // Graceful fallback if no API key is configured.
+  if (!process.env.DEEPSEEK_API_KEY) {
     const fallback = tone === 'professional'
       ? `Thank you for your feedback! We truly appreciate you taking the time to share your experience with us.`
       : tone === 'friendly'
@@ -20,7 +21,7 @@ async function generateReplyDraft(review, businessName, tone = 'professional') {
     casual: 'casual and conversational'
   };
 
-  const prompt = `You are a ${toneMap[tone]} business owner named at "${businessName}".
+  const prompt = `You are a ${toneMap[tone] || toneMap.professional} business owner at "${businessName}".
 Write a SHORT reply (2-4 sentences max) to this customer review.
 Rating: ${review.rating}/5
 Review: "${review.text}"
@@ -34,26 +35,25 @@ Rules:
 Reply only with the response text:`;
 
   const response = await axios.post(
-    'https://api.anthropic.com/v1/messages',
+    DEEPSEEK_API_URL,
     {
-      model: CLAUDE_MODEL,
+      model: DEEPSEEK_MODEL,
       max_tokens: 150,
       messages: [{ role: 'user', content: prompt }]
     },
     {
       headers: {
-        'x-api-key': process.env.CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
         'content-type': 'application/json'
-      }
+      },
+      timeout: 30000
     }
   );
 
-  return response.data.content[0].text.trim();
+  return response.data.choices[0].message.content.trim();
 }
 
 async function analyzeSentiment(text) {
-  // Simple keyword-based to save tokens — no API call needed
   const negative = ['terrible', 'horrible', 'worst', 'awful', 'bad', 'rude', 'never again', 'disappointed', 'scam', 'fraud'];
   const positive = ['great', 'excellent', 'amazing', 'love', 'best', 'perfect', 'wonderful', 'fantastic'];
 
@@ -70,7 +70,6 @@ async function detectFakeReview(review) {
   const reasons = [];
   const text = review.text || '';
 
-  // Heuristic detection — no API call needed
   if (text.length < 15) reasons.push('Suspiciously short review');
   if (review.rating === 1 && text.length < 30) reasons.push('1-star with no explanation');
   if (/(.)\1{4,}/.test(text)) reasons.push('Repeated characters detected');
