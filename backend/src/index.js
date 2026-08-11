@@ -12,12 +12,19 @@ const widgetRoutes = require('./routes/widget');
 
 const app = express();
 
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  throw new Error('JWT_SECRET must be configured and at least 32 characters long');
+}
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL must be configured');
+}
+
 const allowedOrigins = (process.env.FRONTEND_URL || '').split(',').map(v => v.trim()).filter(Boolean);
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('Origin not allowed'));
   },
   credentials: true
@@ -37,10 +44,11 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use((err, req, res, next) => {
   console.error(err);
   if (res.headersSent) return next(err);
-  res.status(500).json({ error: 'Internal server error' });
+  const status = err.message === 'Origin not allowed' ? 403 : 500;
+  res.status(status).json({ error: status === 403 ? 'Origin not allowed' : 'Internal server error' });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 initDb()
   .then(() => app.listen(PORT, () => console.log(`LocalProof API running on port ${PORT}`)))
   .catch(err => {
