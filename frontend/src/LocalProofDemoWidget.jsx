@@ -23,7 +23,7 @@ export default function LocalProofDemoWidget({ userId, apiUrl }) {
       await fetch(`${baseUrl}/widget/${userId}/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, feedback }),
+        body: JSON.stringify({ rating, comment: feedback }),
       });
       setSubmitted(true);
     } catch (err) {

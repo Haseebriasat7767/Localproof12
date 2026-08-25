@@ -13,6 +13,7 @@ export default function Dashboard() {
   useEffect(() => {
     Promise.all([reviews.getStats(), reviews.getAll({ limit: 5 })])
       .then(([s, r]) => { setStats(s.data); setRecentReviews(r.data.reviews); })
+      .catch(err => console.error('Failed to load dashboard data:', err))
       .finally(() => setLoading(false));
   }, []);
 

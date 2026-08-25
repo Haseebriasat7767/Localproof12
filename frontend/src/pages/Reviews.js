@@ -14,9 +14,12 @@ export default function Reviews() {
 
   const load = async () => {
     setLoading(true);
-    const res = await reviewsApi.getAll(filter);
-    setReviewList(res.data.reviews);
-    setLoading(false);
+    try {
+      const res = await reviewsApi.getAll(filter);
+      setReviewList(res.data.reviews);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [filter]);
