@@ -2,12 +2,12 @@ const bcrypt = require('bcryptjs');
 const { pool } = require('../db');
 
 const User = {
-  async create({ name, email, password, businessName }) {
+  async create({ name, email, password, businessName, plan }) {
     const hashed = await bcrypt.hash(password, 12);
     const { rows } = await pool.query(
-      `INSERT INTO users (name, email, password, business_name)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [name, email.toLowerCase(), hashed, businessName || '']
+      `INSERT INTO users (name, email, password, business_name, plan)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [name, email.toLowerCase(), hashed, businessName || '', plan || 'trialing']
     );
     return User._format(rows[0]);
   },

@@ -1,12 +1,17 @@
 const express = require('express');
 const auth = require('../middleware/auth');
+const requireActive = require('../middleware/requireActive');
 const Review = require('../models/Review');
 const { generateReplyDraft, analyzeSentiment, detectFakeReview } = require('../services/claude');
 
 const router = express.Router();
 
+// Every review route is paid product surface: authenticate, then require an
+// active trial or subscription.
+router.use(auth, requireActive);
+
 // Get all reviews for current user
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { sentiment, replied, platform, page = 1, limit = 20 } = req.query;
     const filter = { userId: req.user.id };
@@ -24,7 +29,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Add review manually
-router.post('/manual', auth, async (req, res) => {
+router.post('/manual', async (req, res) => {
   try {
     const { authorName, rating, text, platform = 'manual', date } = req.body;
     const sentiment = await analyzeSentiment(text);
@@ -50,7 +55,7 @@ router.post('/manual', auth, async (req, res) => {
 });
 
 // Generate AI reply draft
-router.post('/:id/draft', auth, async (req, res) => {
+router.post('/:id/draft', async (req, res) => {
   try {
     const review = await Review.findOne({ id: req.params.id, userId: req.user.id });
     if (!review) return res.status(404).json({ error: 'Review not found' });
@@ -65,7 +70,7 @@ router.post('/:id/draft', auth, async (req, res) => {
 });
 
 // Save final reply
-router.patch('/:id/reply', auth, async (req, res) => {
+router.patch('/:id/reply', async (req, res) => {
   try {
     const { replyText } = req.body;
     const review = await Review.findOneAndUpdate(
@@ -80,7 +85,7 @@ router.patch('/:id/reply', auth, async (req, res) => {
 });
 
 // Dashboard stats
-router.get('/stats', auth, async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
     const userId = req.user.id;
     const total = await Review.countDocuments({ userId });

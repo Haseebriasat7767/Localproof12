@@ -8,6 +8,18 @@ API.interceptors.request.use(config => {
   return config;
 });
 
+// A 402 means the trial ended and there's no active subscription. Send the
+// user to the pricing page so they can subscribe instead of hitting a dead UI.
+API.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 402 && window.location.pathname !== '/pricing') {
+      window.location.assign('/pricing?expired=1');
+    }
+    return Promise.reject(err);
+  }
+);
+
 export const auth = {
   register: (data) => API.post('/auth/register', data),
   login: (data) => API.post('/auth/login', data),
