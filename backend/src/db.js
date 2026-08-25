@@ -1,12 +1,28 @@
 const { Pool } = require('pg');
 
+// On Vercel/Lambda each concurrent instance gets its own module scope, and so
+// its own pool. A pool of 10 across 20 warm instances is 200 connections,
+// which exhausts a typical Postgres limit. Long-lived servers (Railway, local)
+// keep a normal pool.
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+  max: isServerless ? 1 : 10,
+  // Release idle connections quickly on serverless so a frozen instance does
+  // not hold one open.
+  idleTimeoutMillis: isServerless ? 1000 : 30000,
+  connectionTimeoutMillis: 10000
 });
 
-async function initDb() {
-  await pool.query(`
+// An idle client dropped by the database emits 'error' on the pool. Unhandled,
+// that takes down the process.
+pool.on('error', (err) => {
+  console.error('Unexpected database pool error:', err.message);
+});
+
+const SCHEMA = `
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -54,8 +70,27 @@ async function initDb() {
       source VARCHAR(50) DEFAULT 'widget',
       created_at TIMESTAMP DEFAULT NOW()
     );
-  `);
+`;
+
+// Applies the schema unconditionally. Used by `npm run migrate`.
+async function applySchema() {
+  await pool.query(SCHEMA);
   console.log('Database schema initialized');
 }
 
-module.exports = { pool, initDb };
+let initPromise = null;
+
+// Memoised so the schema round-trip happens at most once per process, and
+// skippable once the schema is managed by an explicit migration step —
+// on serverless that saves a round-trip on every cold start.
+function initDb() {
+  if (initPromise) return initPromise;
+
+  initPromise = process.env.SKIP_DB_INIT === '1'
+    ? Promise.resolve()
+    : applySchema();
+
+  return initPromise;
+}
+
+module.exports = { pool, initDb, applySchema, SCHEMA };
