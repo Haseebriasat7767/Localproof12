@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const { initDb } = require('./db');
+const errorHandler = require('./middleware/errorHandler');
 
 const authRoutes = require('./routes/auth');
 const reviewRoutes = require('./routes/reviews');
@@ -39,5 +40,10 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/widget', widgetRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+
+// Must be last: express only treats a 4-arg middleware as an error handler.
+app.use(errorHandler);
 
 module.exports = app;

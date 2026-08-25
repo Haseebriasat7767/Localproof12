@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(auth, requireActive);
 
 // Update business profile
-router.patch('/profile', async (req, res) => {
+router.patch('/profile', async (req, res, next) => {
   try {
     const { businessName, tone } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -19,12 +19,12 @@ router.patch('/profile', async (req, res) => {
     );
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Get unhappy customer alerts
-router.get('/alerts', async (req, res) => {
+router.get('/alerts', async (req, res, next) => {
   try {
     const alerts = await Feedback.find(
       { userId: req.user.id, isUnhappy: true },
@@ -32,12 +32,12 @@ router.get('/alerts', async (req, res) => {
     );
     res.json({ alerts });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Get all feedback
-router.get('/feedback', async (req, res) => {
+router.get('/feedback', async (req, res, next) => {
   try {
     const feedback = await Feedback.find(
       { userId: req.user.id },
@@ -45,7 +45,7 @@ router.get('/feedback', async (req, res) => {
     );
     res.json({ feedback });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

@@ -10,7 +10,7 @@ function getStripe() {
 }
 
 // Create checkout session
-router.post('/checkout', auth, async (req, res) => {
+router.post('/checkout', auth, async (req, res, next) => {
   try {
     const stripe = getStripe();
     if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
@@ -36,12 +36,12 @@ router.post('/checkout', auth, async (req, res) => {
 
     res.json({ url: session.url });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Stripe webhook
-router.post('/webhook', async (req, res) => {
+router.post('/webhook', async (req, res, next) => {
   const stripe = getStripe();
   if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
 
@@ -70,7 +70,7 @@ router.post('/webhook', async (req, res) => {
 });
 
 // Get billing portal
-router.post('/portal', auth, async (req, res) => {
+router.post('/portal', auth, async (req, res, next) => {
   try {
     const stripe = getStripe();
     if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
@@ -81,7 +81,7 @@ router.post('/portal', auth, async (req, res) => {
     });
     res.json({ url: session.url });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
