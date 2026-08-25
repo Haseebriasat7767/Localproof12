@@ -1,6 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Star, Shield, Zap, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { CheckCircle, ArrowRight, Star, Shield, Zap, Globe, AlertTriangle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { billing } from '../services/api';
 
 const features = [
   { icon: Star, text: 'Unlimited review tracking' },
@@ -14,12 +16,42 @@ const features = [
 ];
 
 export default function Pricing() {
+  const { user, loading } = useAuth();
+  const { search } = useLocation();
+  const expired = new URLSearchParams(search).get('expired') === '1';
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [error, setError] = useState('');
+
+  const subscribe = async () => {
+    setCheckingOut(true);
+    setError('');
+    try {
+      const res = await billing.checkout();
+      window.location.href = res.data.url;
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not start checkout. Please try again.');
+      setCheckingOut(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0e1a] flex flex-col items-center justify-center px-6 py-16">
       <Link to="/" className="flex items-center gap-2.5 mb-10">
         <img src="/logo.svg" alt="LocalProof" className="w-8 h-8" />
         <span className="text-xl font-bold text-white tracking-tight">LocalProof</span>
       </Link>
+
+      {expired && (
+        <div className="mb-8 max-w-md w-full flex items-start gap-3 bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
+          <AlertTriangle size={18} className="text-orange-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-orange-300">Your free trial has ended</p>
+            <p className="text-xs text-orange-300/70 mt-1">
+              Subscribe to get back into your dashboard — your reviews and feedback are safe.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="text-center max-w-xl mb-10">
         <h2 className="text-4xl font-bold text-white mb-3 tracking-tight">Simple pricing</h2>
@@ -34,7 +66,9 @@ export default function Pricing() {
           <span className="text-5xl font-bold text-white">$49</span>
           <span className="text-slate-400 mb-2">/month</span>
         </div>
-        <p className="text-xs text-slate-500 mb-8">14-day free trial · No credit card · Pay after trial</p>
+        <p className="text-xs text-slate-500 mb-8">
+          {user ? 'Billed monthly · Cancel anytime' : '14-day free trial · No credit card · Pay after trial'}
+        </p>
 
         <ul className="space-y-3 text-left mb-8">
           {features.map(f => (
@@ -44,15 +78,32 @@ export default function Pricing() {
           ))}
         </ul>
 
-        <Link to="/register"
-          className="block w-full bg-white text-[#0a0e1a] py-3.5 rounded-xl font-semibold hover:bg-slate-200 text-center transition-all flex items-center justify-center gap-2">
-          Start free trial <ArrowRight size={16} />
-        </Link>
+        {error && (
+          <p className="text-red-400 text-xs mb-3 text-left">{error}</p>
+        )}
+
+        {loading ? (
+          <div className="w-full py-3.5 rounded-xl bg-white/10 text-slate-400 text-sm font-medium text-center">
+            Loading…
+          </div>
+        ) : user ? (
+          <button onClick={subscribe} disabled={checkingOut}
+            className="w-full bg-white text-[#0a0e1a] py-3.5 rounded-xl font-semibold hover:bg-slate-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+            {checkingOut ? 'Redirecting…' : <>Subscribe now <ArrowRight size={16} /></>}
+          </button>
+        ) : (
+          <Link to="/register"
+            className="block w-full bg-white text-[#0a0e1a] py-3.5 rounded-xl font-semibold hover:bg-slate-200 text-center transition-all flex items-center justify-center gap-2">
+            Start free trial <ArrowRight size={16} />
+          </Link>
+        )}
       </div>
 
-      <p className="text-slate-500 text-sm mt-8">
-        Already have an account? <Link to="/login" className="text-white font-medium hover:underline">Sign in</Link>
-      </p>
+      {!user && (
+        <p className="text-slate-500 text-sm mt-8">
+          Already have an account? <Link to="/login" className="text-white font-medium hover:underline">Sign in</Link>
+        </p>
+      )}
     </div>
   );
 }

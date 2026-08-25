@@ -1,12 +1,16 @@
 const express = require('express');
 const auth = require('../middleware/auth');
+const requireActive = require('../middleware/requireActive');
 const User = require('../models/User');
 const Feedback = require('../models/Feedback');
 
 const router = express.Router();
 
+// Paid product surface: authenticate, then require an active trial or subscription.
+router.use(auth, requireActive);
+
 // Update business profile
-router.patch('/profile', auth, async (req, res) => {
+router.patch('/profile', async (req, res) => {
   try {
     const { businessName, tone } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -20,7 +24,7 @@ router.patch('/profile', auth, async (req, res) => {
 });
 
 // Get unhappy customer alerts
-router.get('/alerts', auth, async (req, res) => {
+router.get('/alerts', async (req, res) => {
   try {
     const alerts = await Feedback.find(
       { userId: req.user.id, isUnhappy: true },
@@ -33,7 +37,7 @@ router.get('/alerts', auth, async (req, res) => {
 });
 
 // Get all feedback
-router.get('/feedback', auth, async (req, res) => {
+router.get('/feedback', async (req, res) => {
   try {
     const feedback = await Feedback.find(
       { userId: req.user.id },

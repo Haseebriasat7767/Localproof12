@@ -8,23 +8,32 @@ const router = express.Router();
 const signToken = (userId) =>
   jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-// Register - all users start on pro plan (paid-only model)
+// Register - new users start a 14-day trial; 'pro' is only ever set by Stripe.
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, businessName } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ error: 'All fields required' });
+    if (password.length < 8)
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
 
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ error: 'Email already in use' });
 
-    const user = await User.create({ name, email, password, businessName });
-    // All users start on pro (paid-only SaaS)
-    await User.findByIdAndUpdate(user.id, { plan: 'pro' });
+    const user = await User.create({ name, email, password, businessName, plan: 'trialing' });
     const token = signToken(user.id);
 
-    const fullUser = await User.findById(user.id);
-    res.status(201).json({ token, user: { id: user.id, name, email, businessName: user.businessName, plan: 'pro', trialEndsAt: fullUser.trialEndsAt } });
+    res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        businessName: user.businessName,
+        plan: user.plan,
+        trialEndsAt: user.trialEndsAt
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
