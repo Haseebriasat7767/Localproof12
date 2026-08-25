@@ -8,12 +8,15 @@ const router = express.Router();
 
 // Credential endpoints are brute-force targets; successful logins don't count
 // against the limit so a legitimate user is never locked out by their own use.
+const skipInTest = () => process.env.NODE_ENV === 'test';
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   message: { error: 'Too many login attempts. Please try again in a few minutes.' }
 });
 
@@ -22,6 +25,7 @@ const registerLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   message: { error: 'Too many accounts created from this address. Please try again later.' }
 });
 
