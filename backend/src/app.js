@@ -2,7 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const { initDb } = require('./db');
+const { checkEnv } = require('./config/env');
 const errorHandler = require('./middleware/errorHandler');
+
+// Report configuration problems once at boot, before anything depends on them.
+checkEnv();
 
 const authRoutes = require('./routes/auth');
 const reviewRoutes = require('./routes/reviews');
