@@ -21,9 +21,8 @@ const Review = {
     if (filter.platform !== undefined) { query += ` AND platform = $${i++}`; values.push(filter.platform); }
     if (filter.isFakeSuspected !== undefined) { query += ` AND is_fake_suspected = $${i++}`; values.push(filter.isFakeSuspected); }
 
-    if (sort) {
-      const col = sort === '-date' || sort?.date === -1 ? 'date DESC' : 'date DESC';
-      query += ` ORDER BY ${col}`;
+    if (sort === 'date' || sort?.date === 1) {
+      query += ' ORDER BY date ASC';
     } else {
       query += ' ORDER BY date DESC';
     }
@@ -48,6 +47,7 @@ const Review = {
     if (filter.userId !== undefined) { query += ` AND user_id = $${i++}`; values.push(filter.userId); }
     if (filter.sentiment !== undefined) { query += ` AND sentiment = $${i++}`; values.push(filter.sentiment); }
     if (filter.replied !== undefined) { query += ` AND replied = $${i++}`; values.push(filter.replied); }
+    if (filter.platform !== undefined) { query += ` AND platform = $${i++}`; values.push(filter.platform); }
     if (filter.isFakeSuspected !== undefined) { query += ` AND is_fake_suspected = $${i++}`; values.push(filter.isFakeSuspected); }
 
     const { rows } = await pool.query(query, values);

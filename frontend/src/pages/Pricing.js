@@ -4,7 +4,7 @@ import { CheckCircle, ArrowRight, Star, Shield, Zap, Globe } from 'lucide-react'
 
 const features = [
   { icon: Star, text: 'Unlimited review tracking' },
-  { icon: Zap, text: 'AI reply drafts (Claude Haiku)' },
+  { icon: Zap, text: 'AI reply drafts (DeepSeek)' },
   { icon: Shield, text: 'Fake review detection' },
   { icon: Globe, text: 'Embeddable feedback widget' },
   { icon: CheckCircle, text: 'Unhappy customer alerts (email)' },
