@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const { initDb } = require('./db');
 
 const authRoutes = require('./routes/auth');
@@ -11,6 +12,12 @@ const widgetRoutes = require('./routes/widget');
 const app = express();
 const dbReady = initDb();
 
+// Runs behind Vercel/Railway's proxy. Without this, express sees the proxy's
+// IP for every request and the rate limiters would share one bucket across
+// all visitors.
+app.set('trust proxy', 1);
+
+app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '1mb' }));
