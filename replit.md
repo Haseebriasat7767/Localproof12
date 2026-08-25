@@ -1,13 +1,13 @@
 # LocalProof — AI Review Manager for Local Businesses
 
 ## Overview
-LocalProof is an AI-powered review management platform for local businesses. It helps business owners monitor reviews, detect fake reviews, generate AI-drafted responses (via Claude), and manage customer feedback through an embeddable widget and dashboard.
+LocalProof is an AI-powered review management platform for local businesses. It helps business owners monitor reviews, detect fake reviews, generate AI-drafted responses (via DeepSeek), and manage customer feedback through an embeddable widget and dashboard.
 
 ## Architecture
 - **Frontend**: React 18 + Tailwind CSS + React Router v6 (Create React App), runs on port 5000
 - **Backend**: Node.js + Express, runs on port 3001
 - **Database**: Replit PostgreSQL (migrated from MongoDB)
-- **AI**: Claude Haiku (Anthropic API) for review response drafts
+- **AI**: DeepSeek Chat (OpenAI-compatible API) for review response drafts
 - **Payments**: Stripe (optional)
 - **Email**: Resend (optional)
 - **Auth**: JWT + bcryptjs
@@ -22,7 +22,7 @@ LocalProof is an AI-powered review management platform for local businesses. It 
     models/        — User, Review, Feedback (pg-based)
     routes/        — auth, reviews, business, billing, widget
     middleware/    — JWT auth middleware
-    services/      — claude.js (AI + sentiment + fake detection)
+    services/      — claude.js (DeepSeek AI reply drafts + sentiment + fake detection)
 ```
 
 ## Running the App
@@ -33,7 +33,7 @@ LocalProof is an AI-powered review management platform for local businesses. It 
 The following secrets need to be configured for full functionality:
 - `DATABASE_URL` — Auto-provisioned by Replit PostgreSQL
 - `JWT_SECRET` — Set in `backend/.env` (default provided for dev)
-- `CLAUDE_API_KEY` — Anthropic API key (for AI reply drafts)
+- `DEEPSEEK_API_KEY` — DeepSeek API key (for AI reply drafts)
 - `STRIPE_SECRET_KEY` — Stripe secret (for billing)
 - `STRIPE_WEBHOOK_SECRET` — Stripe webhook secret
 - `STRIPE_PRICE_ID` — Stripe price ID for Pro plan

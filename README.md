@@ -2,11 +2,11 @@
 
 ## Stack
 - **Frontend:** React + Tailwind CSS + React Router
-- **Backend:** Node.js + Express + MongoDB
-- **AI:** Claude Haiku (cheapest, ~$0.25/1M tokens)
+- **Backend:** Node.js + Express + PostgreSQL
+- **AI:** DeepSeek Chat (OpenAI-compatible API)
 - **Payments:** Stripe
 - **Email:** Resend
-- **Deploy:** Vercel (frontend) + Railway (backend)
+- **Deploy:** Vercel (frontend + serverless API) / Railway (backend)
 
 ## Setup
 
@@ -38,14 +38,14 @@ npm start
 - ✅ Settings (tone, business name)
 
 ## Keys Needed from Haseeb
-- [ ] MongoDB URI (free: mongodb.com/atlas)
+- [ ] PostgreSQL connection string (`DATABASE_URL`)
 - [ ] Stripe secret key + price ID
 - [ ] Resend API key (free tier: resend.com)
-- [ ] Claude API key (Anthropic)
-- [ ] Hosting: Vercel + Railway (both free tier)
+- [ ] DeepSeek API key (platform.deepseek.com)
+- [ ] Hosting: Vercel (frontend + serverless API) / Railway (backend)
 
 ## Cost Optimization
 - AI only called when user clicks "AI Draft" — no background polling
 - Fake detection is pure code (no API)
 - Sentiment analysis is pure code (no API)
-- Uses Claude Haiku (10x cheaper than Sonnet)
+- Uses DeepSeek Chat (falls back to a canned reply if no API key is set)
