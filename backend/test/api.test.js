@@ -294,6 +294,54 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
     });
   });
 
+  describe('error handling', () => {
+    test('does not leak internal error details on a server failure', async () => {
+      const { res: signupRes } = await signup();
+      const auth = { Authorization: `Bearer ${signupRes.body.token}` };
+
+      // Force a genuine server-side failure behind an authenticated route.
+      const Review = require('../src/models/Review');
+      const original = Review.countDocuments;
+      Review.countDocuments = async () => {
+        throw new Error('relation "reviews" does not exist at character 42');
+      };
+
+      try {
+        const res = await request(app).get('/api/reviews/stats').set(auth);
+        assert.equal(res.status, 500);
+        assert.equal(res.body.error, 'Something went wrong. Please try again.');
+        // Regression: routes used to echo err.message straight to the client.
+        assert.doesNotMatch(res.body.error, /relation|character|does not exist/);
+      } finally {
+        Review.countDocuments = original;
+      }
+    });
+
+    test('still returns useful messages for client errors', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({ name: 'A', email: 'a@test.com', password: 'short' });
+      assert.equal(res.status, 400);
+      assert.match(res.body.error, /8 characters/);
+    });
+
+    test('returns json, not html, for an unknown route', async () => {
+      const res = await request(app).get('/api/does-not-exist');
+      assert.equal(res.status, 404);
+      assert.equal(res.body.error, 'Not found');
+    });
+
+    test('rejects malformed json without exposing a stack trace', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .set('Content-Type', 'application/json')
+        .send('{"email": broken}');
+      assert.equal(res.status, 400);
+      assert.ok(res.body.error);
+      assert.doesNotMatch(JSON.stringify(res.body), /at Object|node_modules|\.js:\d+/);
+    });
+  });
+
   describe('health', () => {
     test('reports ok', async () => {
       const res = await request(app).get('/health');

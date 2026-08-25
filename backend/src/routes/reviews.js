@@ -11,7 +11,7 @@ const router = express.Router();
 router.use(auth, requireActive);
 
 // Get all reviews for current user
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const { sentiment, replied, platform, page = 1, limit = 20 } = req.query;
     const filter = { userId: req.user.id };
@@ -24,12 +24,12 @@ router.get('/', async (req, res) => {
     const total = await Review.countDocuments(filter);
     res.json({ reviews, total, pages: Math.ceil(total / limit) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Add review manually
-router.post('/manual', async (req, res) => {
+router.post('/manual', async (req, res, next) => {
   try {
     const { authorName, rating, text, platform = 'manual', date } = req.body;
     const sentiment = await analyzeSentiment(text);
@@ -50,12 +50,12 @@ router.post('/manual', async (req, res) => {
 
     res.status(201).json({ review });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Generate AI reply draft
-router.post('/:id/draft', async (req, res) => {
+router.post('/:id/draft', async (req, res, next) => {
   try {
     const review = await Review.findOne({ id: req.params.id, userId: req.user.id });
     if (!review) return res.status(404).json({ error: 'Review not found' });
@@ -65,12 +65,12 @@ router.post('/:id/draft', async (req, res) => {
 
     res.json({ draft });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Save final reply
-router.patch('/:id/reply', async (req, res) => {
+router.patch('/:id/reply', async (req, res, next) => {
   try {
     const { replyText } = req.body;
     const review = await Review.findOneAndUpdate(
@@ -80,12 +80,12 @@ router.patch('/:id/reply', async (req, res) => {
     if (!review) return res.status(404).json({ error: 'Review not found' });
     res.json({ review });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Dashboard stats
-router.get('/stats', async (req, res) => {
+router.get('/stats', async (req, res, next) => {
   try {
     const userId = req.user.id;
     const total = await Review.countDocuments({ userId });
@@ -107,7 +107,7 @@ router.get('/stats', async (req, res) => {
       avgRating: ratingAgg[0]?.avg?.toFixed(1) || 0
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

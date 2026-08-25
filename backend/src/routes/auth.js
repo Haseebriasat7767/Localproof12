@@ -33,7 +33,7 @@ const signToken = (userId) =>
   jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 // Register - new users start a 14-day trial; 'pro' is only ever set by Stripe.
-router.post('/register', registerLimiter, async (req, res) => {
+router.post('/register', registerLimiter, async (req, res, next) => {
   try {
     const { name, email, password, businessName } = req.body;
     if (!name || !email || !password)
@@ -59,12 +59,12 @@ router.post('/register', registerLimiter, async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Login
-router.post('/login', loginLimiter, async (req, res) => {
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -76,17 +76,17 @@ router.post('/login', loginLimiter, async (req, res) => {
     const token = signToken(user.id);
     res.json({ token, user: { id: user.id, name: user.name, email, businessName: user.businessName, plan: user.plan, trialEndsAt: user.trialEndsAt } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 // Get current user
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/me', authMiddleware, async (req, res, next) => {
   res.json({ user: req.user });
 });
 
 // Get trial status
-router.get('/trial', authMiddleware, async (req, res) => {
+router.get('/trial', authMiddleware, async (req, res, next) => {
   const now = new Date();
   const trialEnd = new Date(req.user.trialEndsAt);
   const trialExpired = trialEnd < now;
@@ -102,13 +102,13 @@ router.get('/trial', authMiddleware, async (req, res) => {
 });
 
 // Update tone preference
-router.patch('/tone', authMiddleware, async (req, res) => {
+router.patch('/tone', authMiddleware, async (req, res, next) => {
   try {
     const { tone } = req.body;
     await User.findByIdAndUpdate(req.user.id, { tone });
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
