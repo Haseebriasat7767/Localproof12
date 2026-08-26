@@ -43,6 +43,16 @@ describe('committed deployment config', () => {
     assert.ok(vercel.functions['api/index.js'], 'the serverless function must be declared');
   });
 
+  test('the node version is pinned, not an open-ended range', () => {
+    // ">=22" lets the platform silently jump to the next major Node release,
+    // which can break the build with no change on our side.
+    const pkg = JSON.parse(fs.readFileSync(path.join(REPO, 'package.json'), 'utf8'));
+    const node = pkg.engines?.node;
+    assert.ok(node, 'engines.node should be declared');
+    assert.doesNotMatch(node, /^[><]/, `engines.node should pin a major (got "${node}")`);
+    assert.match(node, /^\d+\.x$/, `engines.node should look like "22.x" (got "${node}")`);
+  });
+
   test('the serverless entrypoint exists at the repo root', () => {
     // If this moves under frontend/, or Vercel's Root Directory is set to
     // frontend, the API is excluded from the deployment entirely.
