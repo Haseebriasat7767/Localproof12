@@ -56,6 +56,47 @@ describe('connection string resolution', () => {
     const db = loadDb(clearAll);
     assert.equal(db.connection.name, null);
   });
+
+  // resolveConnectionString takes an env object, so these need no module reload.
+  const { resolveConnectionString } = require('../src/db');
+
+  test('finds a store-prefixed variable from a marketplace integration', () => {
+    // Vercel's Nile integration publishes e.g. iojio_NILEDB_POSTGRES_URL.
+    const resolved = resolveConnectionString({
+      iojio_NILEDB_POSTGRES_URL: 'postgres://nile.example/db'
+    });
+    assert.equal(resolved.name, 'iojio_NILEDB_POSTGRES_URL');
+    assert.equal(resolved.value, 'postgres://nile.example/db');
+  });
+
+  test('ignores an empty prefixed variable and uses the populated one', () => {
+    const resolved = resolveConnectionString({
+      iojio_POSTGRES_URL: '',
+      iojio_NILEDB_POSTGRES_URL: 'postgres://nile.example/db'
+    });
+    assert.equal(resolved.name, 'iojio_NILEDB_POSTGRES_URL');
+  });
+
+  test('never mistakes an https API endpoint for a connection string', () => {
+    // NILEDB_API_URL sits alongside the real one and is not Postgres.
+    const resolved = resolveConnectionString({
+      iojio_NILEDB_API_URL: 'https://api.thenile.dev/databases/abc',
+      iojio_NILEDB_POSTGRES_URL: 'postgres://nile.example/db'
+    });
+    assert.equal(resolved.name, 'iojio_NILEDB_POSTGRES_URL');
+  });
+
+  test('finds nothing when only a non-Postgres URL is present', () => {
+    const resolved = resolveConnectionString({
+      iojio_NILEDB_API_URL: 'https://api.thenile.dev/databases/abc'
+    });
+    assert.equal(resolved.name, null);
+  });
+
+  test('accepts both postgres:// and postgresql:// schemes', () => {
+    assert.ok(resolveConnectionString({ DATABASE_URL: 'postgres://a/db' }).name);
+    assert.ok(resolveConnectionString({ DATABASE_URL: 'postgresql://a/db' }).name);
+  });
 });
 
 describe('connection pool', () => {

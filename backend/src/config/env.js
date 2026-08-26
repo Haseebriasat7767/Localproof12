@@ -6,7 +6,7 @@
 // Surfacing it once at startup turns those into something visible in the
 // platform logs.
 
-const { CONNECTION_VARS } = require('../db');
+const { CONNECTION_VARS, resolveConnectionString } = require('../db');
 
 const REQUIRED = [
   ['JWT_SECRET', 'login and registration will fail — tokens cannot be signed']
@@ -51,15 +51,15 @@ function checkEnv({ log = console } = {}) {
     if (!process.env[name]) problems.missingRequired.push({ name, consequence });
   }
 
-  // The database connection string is accepted under any provider's name, so
-  // report it missing only when none of them is set.
-  if (!CONNECTION_VARS.some((name) => process.env[name])) {
+  // The connection string is accepted under any provider's name, prefixed or
+  // not, so report it missing only when the resolver finds nothing.
+  if (!resolveConnectionString().name) {
     problems.missingRequired.push({
       name: 'DATABASE_URL',
       consequence:
-        'no database connection string found (tried ' +
-        CONNECTION_VARS.join(', ') +
-        ') — every request returns 503'
+        'no Postgres connection string found in any environment variable ' +
+        `(looked for ${CONNECTION_VARS.join(', ')}, with or without a store ` +
+        'prefix) — every request returns 503'
     });
   }
 
