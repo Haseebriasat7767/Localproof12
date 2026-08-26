@@ -1,5 +1,26 @@
 const { Pool } = require('pg');
 
+// Managed Postgres providers each publish the connection string under their own
+// name — Nile uses NILEDB_POSTGRES_URL, Vercel/Neon use POSTGRES_URL, Supabase
+// and self-hosted setups use DATABASE_URL. Accept any of them so attaching a
+// database to the project is enough, with no manual copying.
+const CONNECTION_VARS = [
+  'DATABASE_URL',
+  'POSTGRES_URL',
+  'POSTGRES_URL_NON_POOLING',
+  'NILEDB_POSTGRES_URL',
+  'NILEDB_URL'
+];
+
+function resolveConnectionString() {
+  for (const name of CONNECTION_VARS) {
+    if (process.env[name]) return { name, value: process.env[name] };
+  }
+  return { name: null, value: undefined };
+}
+
+const connection = resolveConnectionString();
+
 // On Vercel/Lambda each concurrent instance gets its own module scope, and so
 // its own pool. A pool of 10 across 20 warm instances is 200 connections,
 // which exhausts a typical Postgres limit. Long-lived servers (Railway, local)
@@ -7,8 +28,8 @@ const { Pool } = require('pg');
 const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+  connectionString: connection.value,
+  ssl: connection.value && connection.value.includes('localhost') ? false : { rejectUnauthorized: false },
   max: isServerless ? 1 : 10,
   // Release idle connections quickly on serverless so a frozen instance does
   // not hold one open.
@@ -93,4 +114,6 @@ function initDb() {
   return initPromise;
 }
 
-module.exports = { pool, initDb, applySchema, SCHEMA };
+// `connection` is the resolution the pool was actually built from, captured at
+// import; resolveConnectionString re-reads the environment on demand.
+module.exports = { pool, initDb, applySchema, SCHEMA, connection, resolveConnectionString, CONNECTION_VARS };

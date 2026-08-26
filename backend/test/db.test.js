@@ -26,6 +26,38 @@ function loadDb(env = {}) {
 
 const BASE = { DATABASE_URL: 'postgresql://user:pass@db.example.com:5432/app' };
 
+describe('connection string resolution', () => {
+  const ALL = ['DATABASE_URL', 'POSTGRES_URL', 'POSTGRES_URL_NON_POOLING', 'NILEDB_POSTGRES_URL', 'NILEDB_URL'];
+  const clearAll = Object.fromEntries(ALL.map((k) => [k, undefined]));
+
+  test('prefers DATABASE_URL when several are set', () => {
+    const db = loadDb({ ...clearAll, DATABASE_URL: 'postgres://a/db', NILEDB_POSTGRES_URL: 'postgres://b/db' });
+    assert.equal(db.connection.name, 'DATABASE_URL');
+  });
+
+  test("falls back to Nile's variable when DATABASE_URL is absent", () => {
+    // Vercel's Nile integration publishes NILEDB_POSTGRES_URL, never DATABASE_URL.
+    const db = loadDb({ ...clearAll, NILEDB_POSTGRES_URL: 'postgres://nile.example/db' });
+    assert.equal(db.connection.name, 'NILEDB_POSTGRES_URL');
+    assert.equal(db.connection.value, 'postgres://nile.example/db');
+  });
+
+  test("falls back to Vercel/Neon's POSTGRES_URL", () => {
+    const db = loadDb({ ...clearAll, POSTGRES_URL: 'postgres://neon.example/db' });
+    assert.equal(db.connection.name, 'POSTGRES_URL');
+  });
+
+  test('actually configures the pool from the fallback variable', () => {
+    const db = loadDb({ ...clearAll, NILEDB_POSTGRES_URL: 'postgres://nile.example/db' });
+    assert.match(db.pool.options.connectionString, /nile\.example/);
+  });
+
+  test('reports nothing found when no provider variable is set', () => {
+    const db = loadDb(clearAll);
+    assert.equal(db.connection.name, null);
+  });
+});
+
 describe('connection pool', () => {
   test('caps the pool at one connection on serverless', () => {
     const { pool } = loadDb({ ...BASE, VERCEL: '1' });
