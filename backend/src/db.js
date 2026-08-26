@@ -2,24 +2,52 @@ const { Pool } = require('pg');
 
 // Managed Postgres providers each publish the connection string under their own
 // name — Nile uses NILEDB_POSTGRES_URL, Vercel/Neon use POSTGRES_URL, Supabase
-// and self-hosted setups use DATABASE_URL. Accept any of them so attaching a
-// database to the project is enough, with no manual copying.
+// and self-hosted setups use DATABASE_URL. Vercel Marketplace integrations also
+// prefix them per store (e.g. iojio_NILEDB_POSTGRES_URL), so exact-name matching
+// is not enough.
 const CONNECTION_VARS = [
   'DATABASE_URL',
-  'POSTGRES_URL',
   'POSTGRES_URL_NON_POOLING',
+  'POSTGRES_URL',
   'NILEDB_POSTGRES_URL',
   'NILEDB_URL'
 ];
 
-function resolveConnectionString() {
+// Only a real Postgres URL qualifies. This matters: providers ship sibling
+// variables like NILEDB_API_URL holding an https:// endpoint, which would
+// otherwise be picked up and fail at connect time.
+const POSTGRES_URL = /^postgres(ql)?:\/\//i;
+const DB_NAME_HINT = /(DATABASE|POSTGRES|NILEDB)/i;
+
+function resolveConnectionString(env = process.env) {
+  const usable = (value) => typeof value === 'string' && POSTGRES_URL.test(value);
+
+  // 1. Exact, unprefixed names, in priority order.
   for (const name of CONNECTION_VARS) {
-    if (process.env[name]) return { name, value: process.env[name] };
+    if (usable(env[name])) return { name, value: env[name] };
   }
+
+  // 2. The same names carrying a store prefix.
+  for (const suffix of CONNECTION_VARS) {
+    for (const [name, value] of Object.entries(env)) {
+      if (name.endsWith(`_${suffix}`) && usable(value)) return { name, value };
+    }
+  }
+
+  // 3. Any database-ish variable holding a Postgres URL, so an unfamiliar
+  //    provider still works rather than failing silently.
+  for (const [name, value] of Object.entries(env)) {
+    if (DB_NAME_HINT.test(name) && usable(value)) return { name, value };
+  }
+
   return { name: null, value: undefined };
 }
 
 const connection = resolveConnectionString();
+
+if (connection.name && connection.name !== 'DATABASE_URL') {
+  console.log(`[config] Using database connection string from ${connection.name}`);
+}
 
 // On Vercel/Lambda each concurrent instance gets its own module scope, and so
 // its own pool. A pool of 10 across 20 warm instances is 200 connections,
