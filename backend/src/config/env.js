@@ -6,8 +6,9 @@
 // Surfacing it once at startup turns those into something visible in the
 // platform logs.
 
+const { CONNECTION_VARS } = require('../db');
+
 const REQUIRED = [
-  ['DATABASE_URL', 'the API cannot reach the database and every request returns 503'],
   ['JWT_SECRET', 'login and registration will fail — tokens cannot be signed']
 ];
 
@@ -48,6 +49,18 @@ function checkEnv({ log = console } = {}) {
 
   for (const [name, consequence] of REQUIRED) {
     if (!process.env[name]) problems.missingRequired.push({ name, consequence });
+  }
+
+  // The database connection string is accepted under any provider's name, so
+  // report it missing only when none of them is set.
+  if (!CONNECTION_VARS.some((name) => process.env[name])) {
+    problems.missingRequired.push({
+      name: 'DATABASE_URL',
+      consequence:
+        'no database connection string found (tried ' +
+        CONNECTION_VARS.join(', ') +
+        ') — every request returns 503'
+    });
   }
 
   for (const feature of FEATURES) {
