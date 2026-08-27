@@ -365,4 +365,15 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       assert.doesNotMatch(body, /password/i);
     });
   });
+
+  describe('healthz', () => {
+    test('always reports ok regardless of database state', async () => {
+      // Unlike /health, this must never 503 — it is the platform liveness
+      // probe, and a database that is still waking up must not look like a
+      // crashed process to Railway/Vercel.
+      const res = await request(app).get('/healthz');
+      assert.equal(res.status, 200);
+      assert.equal(res.body.status, 'ok');
+    });
+  });
 });

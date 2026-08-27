@@ -31,6 +31,13 @@ app.use(cors({ origin: true, credentials: true }));
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '1mb' }));
 
+// Liveness probe for the platform's healthcheck: reports only that the process
+// is up and serving requests. Deliberately never depends on the database —
+// Railway/Vercel treat any non-2xx as "unhealthy" and would kill or endlessly
+// restart an instance whose database is just slow to wake, which is exactly
+// the case /health below is designed to survive.
+app.get('/healthz', (req, res) => res.json({ status: 'ok' }));
+
 // Reports whether the database is actually reachable, and which environment
 // variable the connection string came from. Names only — never values — so this
 // is safe to expose and turns "Database unavailable" into something diagnosable
