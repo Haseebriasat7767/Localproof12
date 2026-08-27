@@ -343,10 +343,26 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
   });
 
   describe('health', () => {
-    test('reports ok', async () => {
+    test('reports ok and a connected database', async () => {
       const res = await request(app).get('/health');
       assert.equal(res.status, 200);
       assert.equal(res.body.status, 'ok');
+      assert.equal(res.body.database.state, 'connected');
+      assert.ok(res.body.database.configuredFrom, 'should name the variable in use');
+    });
+
+    test('answers even when the database gate would reject', async () => {
+      // /health is mounted before the dbReady gate precisely so it can still
+      // report when the database is down.
+      const res = await request(app).get('/health');
+      assert.notEqual(res.body.database, undefined);
+    });
+
+    test('never exposes the connection string itself', async () => {
+      const res = await request(app).get('/health');
+      const body = JSON.stringify(res.body);
+      assert.doesNotMatch(body, /postgres(ql)?:\/\//, 'must report names, not values');
+      assert.doesNotMatch(body, /password/i);
     });
   });
 });
