@@ -62,7 +62,10 @@ const pool = new Pool({
   // Release idle connections quickly on serverless so a frozen instance does
   // not hold one open.
   idleTimeoutMillis: isServerless ? 1000 : 30000,
-  connectionTimeoutMillis: 10000
+  // Managed Postgres on a free tier suspends when idle and can take well over
+  // ten seconds to wake, which was timing out cold starts. The serverless
+  // function's own limit is 30s, so leave room for the query that follows.
+  connectionTimeoutMillis: isServerless ? 20000 : 10000
 });
 
 // An idle client dropped by the database emits 'error' on the pool. Unhandled,
@@ -135,9 +138,17 @@ let initPromise = null;
 function initDb() {
   if (initPromise) return initPromise;
 
-  initPromise = process.env.SKIP_DB_INIT === '1'
+  const attempt = process.env.SKIP_DB_INIT === '1'
     ? Promise.resolve()
     : applySchema();
+
+  // Only a success is memoised. Managed databases can be slow to wake from
+  // idle, and caching the rejection would leave this instance returning 503
+  // for its whole lifetime over one cold-start timeout.
+  initPromise = attempt.catch((err) => {
+    initPromise = null;
+    throw err;
+  });
 
   return initPromise;
 }

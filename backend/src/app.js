@@ -15,13 +15,11 @@ const billingRoutes = require('./routes/billing');
 const widgetRoutes = require('./routes/widget');
 
 const app = express();
-const dbReady = initDb();
 
-// Each request awaits dbReady and turns a failure into a 503, but nothing is
-// attached at boot — so a failing connection surfaced as an unhandled rejection
-// that killed the process before it could answer, /health included. Claim it
-// here; the per-request handler still reports the real error.
-dbReady.catch(() => {});
+// Start connecting immediately so the first request does not pay the whole
+// cold-start cost, but claim the rejection here: unhandled, a failed connection
+// killed the process before it could answer anything, /health included.
+initDb().catch(() => {});
 
 // Runs behind Vercel/Railway's proxy. Without this, express sees the proxy's
 // IP for every request and the rate limiters would share one bucket across
@@ -70,7 +68,10 @@ app.get('/health', async (req, res) => {
 
 app.use(async (req, res, next) => {
   try {
-    await dbReady;
+    // Call per request rather than awaiting one promise captured at boot: a
+    // success is memoised, but a failure clears the memo so a database that was
+    // asleep on the first request can be reached on the next one.
+    await initDb();
     next();
   } catch (err) {
     console.error('Database initialization failed:', err.message);

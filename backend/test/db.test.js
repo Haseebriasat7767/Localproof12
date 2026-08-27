@@ -165,6 +165,31 @@ describe('schema initialisation', () => {
     await db.initDb();
   });
 
+  test('does not memoise a failure, so a later request can retry', async () => {
+    // A cold-start timeout against a sleeping database must not poison the
+    // instance for its whole lifetime.
+    delete process.env.SKIP_DB_INIT;
+    const db = loadDb({ DATABASE_URL: 'postgresql://user:pass@127.0.0.1:1/none' });
+
+    const first = db.initDb();
+    await assert.rejects(first);
+
+    const second = db.initDb();
+    assert.notEqual(second, first, 'a failed init must not be cached');
+    await assert.rejects(second);
+
+    process.env.SKIP_DB_INIT = '1';
+  });
+
+  test('gives a serverless cold start longer to reach a sleeping database', () => {
+    const serverless = loadDb({ ...BASE, VERCEL: '1' }).pool;
+    const server = loadDb({ ...BASE, VERCEL: undefined, AWS_LAMBDA_FUNCTION_NAME: undefined }).pool;
+    assert.ok(
+      serverless.options.connectionTimeoutMillis > server.options.connectionTimeoutMillis,
+      'serverless needs more headroom than a warm long-lived server'
+    );
+  });
+
   test('exposes applySchema for the migrate script', () => {
     const db = loadDb(BASE);
     assert.equal(typeof db.applySchema, 'function');
