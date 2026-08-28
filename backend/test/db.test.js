@@ -181,13 +181,15 @@ describe('schema initialisation', () => {
     process.env.SKIP_DB_INIT = '1';
   });
 
-  test('gives a serverless cold start longer to reach a sleeping database', () => {
+  test('gives every platform the same long timeout to reach a sleeping database', () => {
+    // The cold start comes from the database (Nile free tier suspending when
+    // idle), not from the hosting platform — a long-lived server hits the
+    // same wake-up delay the first time it queries after the database has
+    // gone idle, so this must not be conditional on isServerless.
     const serverless = loadDb({ ...BASE, VERCEL: '1' }).pool;
     const server = loadDb({ ...BASE, VERCEL: undefined, AWS_LAMBDA_FUNCTION_NAME: undefined }).pool;
-    assert.ok(
-      serverless.options.connectionTimeoutMillis > server.options.connectionTimeoutMillis,
-      'serverless needs more headroom than a warm long-lived server'
-    );
+    assert.equal(serverless.options.connectionTimeoutMillis, server.options.connectionTimeoutMillis);
+    assert.ok(serverless.options.connectionTimeoutMillis >= 20000, 'must give a suspended database room to wake');
   });
 
   test('exposes applySchema for the migrate script', () => {

@@ -63,9 +63,11 @@ const pool = new Pool({
   // not hold one open.
   idleTimeoutMillis: isServerless ? 1000 : 30000,
   // Managed Postgres on a free tier suspends when idle and can take well over
-  // ten seconds to wake, which was timing out cold starts. The serverless
-  // function's own limit is 30s, so leave room for the query that follows.
-  connectionTimeoutMillis: isServerless ? 20000 : 10000
+  // ten seconds to wake. This is a property of the database, not of the
+  // hosting platform — a long-lived server (Railway, local) hits the exact
+  // same cold start the first time it queries after the database has gone
+  // idle, so this cannot be conditional on isServerless the way pool size is.
+  connectionTimeoutMillis: 20000
 });
 
 // An idle client dropped by the database emits 'error' on the pool. Unhandled,
