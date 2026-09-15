@@ -48,4 +48,11 @@ export const billing = {
   portal: () => API.post('/billing/portal')
 };
 
+export const googleBusiness = {
+  getConnectUrl: () => API.get('/google/connect'),
+  getLocations: () => API.get('/google/locations'),
+  linkLocation: (data) => API.post('/google/link', data),
+  sync: () => API.post('/google/sync')
+};
+
 export default API;

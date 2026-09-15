@@ -9,11 +9,12 @@ process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret';
 
 describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
-  let request, app, pool;
+  let request, app, pool, Review;
 
   before(async () => {
     request = require('supertest');
     app = require('../src/app');
+    Review = require('../src/models/Review');
     ({ pool } = require('../src/db'));
     // Wait for the schema init kicked off at app load.
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -248,6 +249,77 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       const untouched = await request(app).get('/api/reviews').set(auth);
       const secondNow = untouched.body.reviews.find((r) => r.id === second.body.review.id);
       assert.equal(secondNow.replied, false);
+    });
+  });
+
+  describe('Google Business Profile integration', () => {
+    const authedUser = async () => {
+      const { res } = await signup();
+      return { Authorization: `Bearer ${res.body.token}` };
+    };
+
+    test('rejects connect when the server has no Google credentials configured', async () => {
+      const auth = await authedUser();
+      const res = await request(app).get('/api/google/connect').set(auth);
+      assert.equal(res.status, 400);
+      assert.match(res.body.error, /not configured/);
+    });
+
+    test('rejects sync before the account is connected', async () => {
+      const auth = await authedUser();
+      const res = await request(app).post('/api/google/sync').set(auth);
+      assert.equal(res.status, 400);
+      assert.match(res.body.error, /not connected/);
+    });
+
+    test('rejects sync when connected but no location has been linked yet', async () => {
+      const { res: signupRes, body } = await signup();
+      await pool.query('UPDATE users SET google_connected = true WHERE email = $1', [body.email]);
+      const auth = { Authorization: `Bearer ${signupRes.body.token}` };
+
+      const res = await request(app).post('/api/google/sync').set(auth);
+      assert.equal(res.status, 400);
+      assert.match(res.body.error, /location/);
+    });
+
+    test('upsertExternal skips a review already imported instead of duplicating it', async () => {
+      const auth = await authedUser();
+      const userRes = await request(app).get('/api/auth/me').set(auth);
+      const userId = userRes.body.user.id;
+
+      const first = await Review.upsertExternal({
+        userId, platform: 'google', reviewId: 'g-review-1', authorName: 'A', rating: 5, text: 'Great!'
+      });
+      const second = await Review.upsertExternal({
+        userId, platform: 'google', reviewId: 'g-review-1', authorName: 'A', rating: 5, text: 'Great!'
+      });
+
+      assert.ok(first);
+      assert.equal(second, null);
+
+      const { rows } = await pool.query('SELECT * FROM reviews WHERE user_id = $1 AND review_id = $2', [userId, 'g-review-1']);
+      assert.equal(rows.length, 1);
+    });
+
+    test('a saved reply survives a re-sync of the same review', async () => {
+      const auth = await authedUser();
+      const userRes = await request(app).get('/api/auth/me').set(auth);
+      const userId = userRes.body.user.id;
+
+      const review = await Review.upsertExternal({
+        userId, platform: 'google', reviewId: 'g-review-2', authorName: 'B', rating: 4, text: 'Nice place'
+      });
+      await request(app).patch(`/api/reviews/${review.id}/reply`).set(auth).send({ replyText: 'Thanks!' });
+
+      // Re-syncing the same review must not overwrite the reply already saved on it.
+      const resynced = await Review.upsertExternal({
+        userId, platform: 'google', reviewId: 'g-review-2', authorName: 'B', rating: 4, text: 'Nice place'
+      });
+      assert.equal(resynced, null);
+
+      const { rows } = await pool.query('SELECT replied, reply_text FROM reviews WHERE id = $1', [review.id]);
+      assert.equal(rows[0].replied, true);
+      assert.equal(rows[0].reply_text, 'Thanks!');
     });
   });
 

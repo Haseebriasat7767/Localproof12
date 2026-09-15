@@ -126,9 +126,19 @@ const SCHEMA = `
     );
 `;
 
+// Columns added after the initial release. CREATE TABLE IF NOT EXISTS above
+// never touches an existing table, so new columns land here instead —
+// idempotent, safe to run against a database that already has the table.
+const MIGRATIONS = `
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS google_account_id VARCHAR(255) DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS google_location_id VARCHAR(255) DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS google_location_name VARCHAR(255) DEFAULT '';
+`;
+
 // Applies the schema unconditionally. Used by `npm run migrate`.
 async function applySchema() {
   await pool.query(SCHEMA);
+  await pool.query(MIGRATIONS);
   console.log('Database schema initialized');
 }
 

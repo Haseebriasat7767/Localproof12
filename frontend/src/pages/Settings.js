@@ -1,13 +1,64 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { business, billing, auth as authApi } from '../services/api';
-import { Check, ArrowRight } from 'lucide-react';
+import { business, billing, googleBusiness } from '../services/api';
+import { Check, ArrowRight, Link2, RefreshCw, AlertTriangle } from 'lucide-react';
 
 export default function Settings() {
   const { user, setUser } = useAuth();
+  const { search } = useLocation();
   const [form, setForm] = useState({ businessName: user?.businessName || '', tone: user?.tone || 'professional' });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const googleStatus = new URLSearchParams(search).get('google');
+  const [locations, setLocations] = useState(null);
+  const [locationsError, setLocationsError] = useState('');
+  const [connecting, setConnecting] = useState(false);
+  const [linking, setLinking] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState(null);
+
+  useEffect(() => {
+    if (!user?.googleConnected || user?.googleLocationId) return;
+    googleBusiness.getLocations()
+      .then(res => setLocations(res.data.locations))
+      .catch(err => setLocationsError(err.response?.data?.error || 'Could not load Google locations'));
+  }, [user?.googleConnected, user?.googleLocationId]);
+
+  const connectGoogle = async () => {
+    setConnecting(true);
+    try {
+      const res = await googleBusiness.getConnectUrl();
+      window.location.href = res.data.url;
+    } catch (err) {
+      setLocationsError(err.response?.data?.error || 'Could not start Google connection');
+      setConnecting(false);
+    }
+  };
+
+  const linkLocation = async (loc) => {
+    setLinking(true);
+    try {
+      const res = await googleBusiness.linkLocation({ accountId: loc.accountId, locationId: loc.locationId, title: loc.title });
+      setUser(res.data.user);
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  const syncReviews = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const res = await googleBusiness.sync();
+      setSyncResult(res.data);
+    } catch (err) {
+      setSyncResult({ error: err.response?.data?.error || 'Sync failed' });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -77,6 +128,61 @@ export default function Settings() {
             {saved ? <><Check size={16} /> Saved!</> : <>{loading ? 'Saving...' : 'Save Changes'} <ArrowRight size={16} /></>}
           </button>
         </form>
+      </div>
+
+      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <h3 className="font-semibold text-white mb-2">Google Business Profile</h3>
+        <p className="text-sm text-slate-400 mb-4">
+          Connect your Google Business Profile to pull real reviews in automatically, instead of adding them by hand.
+        </p>
+
+        {googleStatus === 'denied' && (
+          <p className="text-sm text-orange-400 mb-3">Google connection was cancelled.</p>
+        )}
+        {googleStatus === 'error' && (
+          <p className="text-sm text-red-400 mb-3">Something went wrong connecting to Google. Please try again.</p>
+        )}
+        {locationsError && (
+          <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-3">
+            <AlertTriangle size={14} className="text-red-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-red-400">{locationsError}</p>
+          </div>
+        )}
+
+        {!user?.googleConnected && (
+          <button onClick={connectGoogle} disabled={connecting}
+            className="flex items-center gap-2 bg-white/10 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/20 transition-all disabled:opacity-50">
+            <Link2 size={14} /> {connecting ? 'Redirecting…' : 'Connect Google Business Profile'}
+          </button>
+        )}
+
+        {user?.googleConnected && !user?.googleLocationId && (
+          <div className="space-y-2">
+            <p className="text-xs text-slate-500">Choose which business location to sync reviews from:</p>
+            {locations === null && !locationsError && <p className="text-xs text-slate-500">Loading locations…</p>}
+            {locations?.length === 0 && <p className="text-xs text-slate-500">No locations found on this Google account.</p>}
+            {locations?.map(loc => (
+              <button key={loc.locationId} onClick={() => linkLocation(loc)} disabled={linking}
+                className="w-full text-left bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white hover:bg-white/10 transition disabled:opacity-50">
+                {loc.title}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {user?.googleConnected && user?.googleLocationId && (
+          <div className="space-y-3">
+            <p className="text-xs text-emerald-400">Linked to {user.googleLocationName || user.googleLocationId}</p>
+            <button onClick={syncReviews} disabled={syncing}
+              className="flex items-center gap-2 bg-white/10 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/20 transition-all disabled:opacity-50">
+              <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} /> {syncing ? 'Syncing…' : 'Sync reviews now'}
+            </button>
+            {syncResult?.error && <p className="text-xs text-red-400">{syncResult.error}</p>}
+            {syncResult && !syncResult.error && (
+              <p className="text-xs text-slate-500">Imported {syncResult.imported} new review{syncResult.imported === 1 ? '' : 's'} of {syncResult.total} found.</p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6">

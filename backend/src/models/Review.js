@@ -40,6 +40,21 @@ const Review = {
     return results[0] || null;
   },
 
+  // Inserts a review pulled from an external platform, skipping it if
+  // (userId, reviewId) already exists — a sync can safely re-run over the
+  // same reviews without creating duplicates or clobbering a reply already
+  // saved on one.
+  async upsertExternal({ userId, platform, reviewId, authorName, rating, text, date, sentiment, isFakeSuspected, fakeReasons }) {
+    const { rows } = await pool.query(
+      `INSERT INTO reviews (user_id, platform, review_id, author_name, rating, text, date, sentiment, is_fake_suspected, fake_reasons)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       ON CONFLICT (user_id, review_id) DO NOTHING
+       RETURNING *`,
+      [userId, platform, reviewId, authorName || 'Anonymous', rating, text || '', date || new Date(), sentiment || 'neutral', isFakeSuspected || false, fakeReasons || []]
+    );
+    return rows[0] ? Review._format(rows[0]) : null;
+  },
+
   async countDocuments(filter = {}) {
     let query = 'SELECT COUNT(*) FROM reviews WHERE 1=1';
     const values = [];
