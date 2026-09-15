@@ -55,6 +55,7 @@ router.post('/register', registerLimiter, async (req, res, next) => {
         email: user.email,
         businessName: user.businessName,
         plan: user.plan,
+        stripeSubscriptionId: user.stripeSubscriptionId,
         trialEndsAt: user.trialEndsAt
       }
     });
@@ -74,7 +75,18 @@ router.post('/login', loginLimiter, async (req, res, next) => {
     if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
 
     const token = signToken(user.id);
-    res.json({ token, user: { id: user.id, name: user.name, email, businessName: user.businessName, plan: user.plan, trialEndsAt: user.trialEndsAt } });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email,
+        businessName: user.businessName,
+        plan: user.plan,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+        trialEndsAt: user.trialEndsAt
+      }
+    });
   } catch (err) {
     next(err);
   }

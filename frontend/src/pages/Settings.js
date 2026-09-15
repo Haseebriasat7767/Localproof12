@@ -82,7 +82,9 @@ export default function Settings() {
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6">
         <h3 className="font-semibold text-white mb-2">Subscription</h3>
         <p className="text-sm text-slate-400 mb-4">
-          Current plan: <span className="font-semibold text-white">Pro ($49/mo)</span>
+          Current plan: <span className="font-semibold text-white">
+            {user?.plan === 'pro' && user?.stripeSubscriptionId ? 'Pro ($49/mo)' : 'Free Trial'}
+          </span>
         </p>
         {user?.trialEndsAt && !user?.stripeSubscriptionId && (
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-4">

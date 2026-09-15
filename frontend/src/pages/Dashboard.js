@@ -29,6 +29,9 @@ export default function Dashboard() {
     </div>
   );
 
+  const isPaid = user?.plan === 'pro' && !!user?.stripeSubscriptionId;
+  const planLabel = isPaid ? 'Pro Plan' : 'Free Trial';
+
   const statCards = [
     { label: 'Total Reviews', value: stats?.total || 0, icon: Star, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
     { label: 'Avg Rating', value: stats?.avgRating || '—', icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
@@ -44,15 +47,15 @@ export default function Dashboard() {
           <p className="text-slate-500 text-sm mt-1">{user?.businessName || 'Your business'} · Reputation Dashboard</p>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-500 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" /> Pro Plan
+          <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-emerald-400' : 'bg-orange-400'}`} /> {planLabel}
         </div>
       </div>
 
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5 flex items-center justify-between">
         <div>
-          <p className="font-semibold text-white text-sm">Pro Plan</p>
+          <p className="font-semibold text-white text-sm">{planLabel}</p>
           <p className="text-slate-400 text-xs mt-0.5">$49/month — unlimited AI replies + alerts</p>
-          {user?.trialEndsAt && !user?.stripeSubscriptionId && (
+          {user?.trialEndsAt && !isPaid && (
             <p className="text-emerald-400 text-xs mt-1">
               Trial ends: {new Date(user.trialEndsAt).toLocaleDateString()}
             </p>
