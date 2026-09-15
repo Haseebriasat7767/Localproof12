@@ -223,6 +223,32 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       assert.equal(res.body.pending, 1);
       assert.equal(res.body.replied, 0);
     });
+
+    test('replies to the requested review, not just the user\'s latest one', async () => {
+      const auth = await authedUser();
+      const add = (authorName, date) =>
+        request(app).post('/api/reviews/manual').set(auth).send({
+          authorName, rating: 5, text: 'A perfectly ordinary review body', platform: 'google', date
+        });
+
+      const first = await add('Alice', '2024-01-01');
+      const second = await add('Bob', '2024-06-01');
+
+      // Regression: findOne({ id, userId }) ignored the id filter and matched
+      // whichever review sorted first for the user, so replying to an older
+      // review actually mutated the most recent one instead.
+      const res = await request(app)
+        .patch(`/api/reviews/${first.body.review.id}/reply`)
+        .set(auth)
+        .send({ replyText: 'Thanks Alice!' });
+      assert.equal(res.status, 200);
+      assert.equal(res.body.review.id, first.body.review.id);
+      assert.equal(res.body.review.replyText, 'Thanks Alice!');
+
+      const untouched = await request(app).get('/api/reviews').set(auth);
+      const secondNow = untouched.body.reviews.find((r) => r.id === second.body.review.id);
+      assert.equal(secondNow.replied, false);
+    });
   });
 
   describe('public widget', () => {

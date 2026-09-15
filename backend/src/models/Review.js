@@ -15,6 +15,7 @@ const Review = {
     const values = [];
     let i = 1;
 
+    if (filter.id !== undefined) { query += ` AND id = $${i++}`; values.push(filter.id); }
     if (filter.userId !== undefined) { query += ` AND user_id = $${i++}`; values.push(filter.userId); }
     if (filter.sentiment !== undefined) { query += ` AND sentiment = $${i++}`; values.push(filter.sentiment); }
     if (filter.replied !== undefined) { query += ` AND replied = $${i++}`; values.push(filter.replied); }
