@@ -149,7 +149,7 @@ export default function LandingPage() {
                 <p className="text-sm font-medium text-slate-300">One line of code. No tech skills needed.</p>
               </div>
               <code className="block bg-black/40 text-slate-300 p-4 rounded-lg text-sm font-mono break-all border border-white/10">
-                {`<script src="https://localproof.io/api/widget/YOUR_ID/embed.js" async></script>`}
+                {`<script>/* your unique widget snippet — generated after signup */</script>`}
               </code>
             </div>
           </FadeIn>
@@ -160,8 +160,8 @@ export default function LandingPage() {
       <FadeIn>
         <section className="py-8 border-y border-white/5">
           <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8 text-slate-500 text-sm">
-            <span className="flex items-center gap-2"><Shield size={16} className="text-slate-400" /> Google Compliant</span>
-            <span className="flex items-center gap-2"><Award size={16} className="text-slate-400" /> FTC Verified</span>
+            <span className="flex items-center gap-2"><Shield size={16} className="text-slate-400" /> Built to Google review-gating guidelines</span>
+            <span className="flex items-center gap-2"><Award size={16} className="text-slate-400" /> 14-day free trial</span>
             <span className="flex items-center gap-2"><Zap size={16} className="text-slate-400" /> 30-Second Setup</span>
             <span className="flex items-center gap-2"><CheckCircle size={16} className="text-slate-400" /> Cancel Anytime</span>
           </div>
@@ -239,16 +239,16 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* How it works, in numbers you can verify yourself */}
       <FadeIn>
         <section className="py-20 px-6 border-y border-white/5">
           <div className="max-w-5xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-12 tracking-tight">Results that speak for themselves</h2>
+            <h2 className="text-3xl font-bold text-white mb-12 tracking-tight">How it works</h2>
             <div className="grid sm:grid-cols-3 gap-8">
               {[
-                { value: 47, suffix: "%", desc: "more Google reviews in 30 days", prefix: "+" },
-                { value: 82, suffix: "%", desc: "negative reviews caught privately", prefix: "−" },
-                { value: 12, suffix: " min", desc: "average setup time", prefix: "" }
+                { value: 1, suffix: "", desc: "line of code to install the widget", prefix: "" },
+                { value: 5, suffix: "-star", desc: "reviews get routed straight to Google", prefix: "" },
+                { value: 3, suffix: "-star & below", desc: "reviews are caught privately, before they post", prefix: "" }
               ].map((stat, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <span className="text-5xl sm:text-6xl font-bold bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
@@ -287,32 +287,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* What owners get, laid out plainly instead of manufactured quotes */}
       <FadeIn>
         <section className="py-24 px-6 border-y border-white/5">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Loved by local businesses</h2>
-            <p className="text-slate-400 mb-12">Real results from owners just like you.</p>
+            <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Built for owners who don't have time for this</h2>
+            <p className="text-slate-400 mb-12 max-w-xl mx-auto">No review software background needed. Install the widget, and every future customer interaction is already covered.</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
-                { quote: "Our Google rating went from 3.8 to 4.6 in one month. The routing widget is genius.", author: "Maria K.", role: "Dentist", stars: 5 },
-                { quote: "I installed it during my lunch break. It doubled our reviews in two weeks.", author: "David L.", role: "Plumber", stars: 5 },
-                { quote: "The private feedback saved us from a bad public review. Game changer.", author: "Jasmine R.", role: "Salon Owner", stars: 5 }
+                { title: "You don't chase reviews manually", desc: "The widget asks every customer once, automatically routes them, and logs the result — no spreadsheets." },
+                { title: "You see problems before Google does", desc: "A 1-3 star rating goes to your private inbox first, with an instant email alert so you can make it right." },
+                { title: "You reply faster", desc: "AI drafts a reply in your tone in seconds. You approve or edit — it never posts without you." }
               ].map((t, i) => (
                 <div key={i} className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-left hover:border-white/20 transition duration-300">
-                  <div className="flex gap-1 mb-4 text-yellow-500">
-                    {[...Array(t.stars)].map((_, j) => <Star key={j} fill="currentColor" size={16} />)}
-                  </div>
-                  <p className="text-slate-300 mb-6 leading-relaxed text-sm italic">"{t.quote}"</p>
-                  <div className="flex items-center gap-3 mt-auto">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold text-white">
-                      {t.author[0]}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-sm">{t.author}</div>
-                      <div className="text-xs text-slate-500">{t.role}</div>
-                    </div>
-                  </div>
+                  <h3 className="font-semibold text-white text-base mb-3">{t.title}</h3>
+                  <p className="text-slate-400 leading-relaxed text-sm">{t.desc}</p>
                 </div>
               ))}
             </div>

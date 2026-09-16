@@ -13,6 +13,7 @@ const reviewRoutes = require('./routes/reviews');
 const businessRoutes = require('./routes/business');
 const billingRoutes = require('./routes/billing');
 const widgetRoutes = require('./routes/widget');
+const googleRoutes = require('./routes/google');
 
 const app = express();
 
@@ -91,6 +92,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/business', businessRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/widget', widgetRoutes);
+app.use('/api/google', googleRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 

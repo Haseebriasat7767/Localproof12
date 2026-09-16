@@ -37,6 +37,11 @@ const FEATURES = [
     name: 'Checkout redirects',
     vars: ['FRONTEND_URL'],
     consequence: 'Stripe will redirect to an undefined URL after payment'
+  },
+  {
+    name: 'Google review import',
+    vars: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'],
+    consequence: 'users cannot connect Google Business Profile — reviews stay manual-entry only'
   }
 ];
 

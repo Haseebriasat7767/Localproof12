@@ -34,7 +34,10 @@ const User = {
       stripeCustomerId: 'stripe_customer_id',
       stripeSubscriptionId: 'stripe_subscription_id',
       googleConnected: 'google_connected',
-      googleTokens: 'google_tokens'
+      googleTokens: 'google_tokens',
+      googleAccountId: 'google_account_id',
+      googleLocationId: 'google_location_id',
+      googleLocationName: 'google_location_name'
     };
 
     for (const [key, val] of Object.entries(updates)) {
@@ -73,6 +76,9 @@ const User = {
       stripeSubscriptionId: row.stripe_subscription_id,
       googleConnected: row.google_connected,
       googleTokens: row.google_tokens,
+      googleAccountId: row.google_account_id,
+      googleLocationId: row.google_location_id,
+      googleLocationName: row.google_location_name,
       tone: row.tone,
       trialEndsAt: row.trial_ends_at,
       createdAt: row.created_at
