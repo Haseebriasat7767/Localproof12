@@ -13,6 +13,7 @@
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
+const bcrypt = require('bcryptjs');
 const { pool, applySchema } = require('../src/db');
 const User = require('../src/models/User');
 const Review = require('../src/models/Review');
@@ -54,8 +55,11 @@ async function seedDemo({ initSchema = true } = {}) {
       tone: 'friendly',
       googleReviewUrl: 'https://g.page/r/demo-coffee-co/review'
     });
-    console.log(`Demo account already exists (${DEMO_EMAIL}) — profile refreshed.`);
-    console.log('If you changed DEMO_PASSWORD, reset it with: npm run seed:demo -- --reset-password');
+    // Re-seeding re-applies the password too, so the documented demo login
+    // always works after a rerun (e.g. after DEMO_PASSWORD changes).
+    const hashed = await bcrypt.hash(DEMO_PASSWORD, 12);
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashed, demo.id]);
+    console.log(`Demo account already exists (${DEMO_EMAIL}) — profile and password refreshed.`);
   } else {
     demo = await User.create({
       name: 'Demo Owner',

@@ -55,9 +55,16 @@ if (connection.name && connection.name !== 'DATABASE_URL') {
 // keep a normal pool.
 const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
+// Local databases don't speak TLS. Match the loopback hosts by name, not just
+// the word "localhost" — 127.0.0.1 and ::1 are the same machine.
+function isLocalConnection(url) {
+  if (!url) return false;
+  return /@(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(url) || /[?&]host=(localhost|127\.0\.0\.1)/i.test(url);
+}
+
 const pool = new Pool({
   connectionString: connection.value,
-  ssl: connection.value && connection.value.includes('localhost') ? false : { rejectUnauthorized: false },
+  ssl: isLocalConnection(connection.value) ? false : { rejectUnauthorized: false },
   max: isServerless ? 1 : 10,
   // Release idle connections quickly on serverless so a frozen instance does
   // not hold one open.

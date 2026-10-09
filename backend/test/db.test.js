@@ -134,6 +134,15 @@ describe('connection pool', () => {
     assert.equal(local.options.ssl, false);
     assert.deepEqual(remote.options.ssl, { rejectUnauthorized: false });
   });
+
+  test('treats 127.0.0.1 and ::1 as local too, not just the word localhost', () => {
+    // Regression: only "localhost" matched, so a local server addressed by IP
+    // was forced into TLS and failed with "server does not support SSL".
+    const v4 = loadDb({ DATABASE_URL: 'postgresql://postgres@127.0.0.1:5432/app' }).pool;
+    const v6 = loadDb({ DATABASE_URL: 'postgresql://postgres@[::1]:5432/app' }).pool;
+    assert.equal(v4.options.ssl, false);
+    assert.equal(v6.options.ssl, false);
+  });
 });
 
 describe('schema initialisation', () => {
