@@ -25,7 +25,9 @@ export const auth = {
   login: (data) => API.post('/auth/login', data),
   me: () => API.get('/auth/me'),
   trial: () => API.get('/auth/trial'),
-  updateTone: (tone) => API.patch('/auth/tone', { tone })
+  updateTone: (tone) => API.patch('/auth/tone', { tone }),
+  demoStatus: () => API.get('/auth/demo'),
+  demoLogin: () => API.post('/auth/demo-login')
 };
 
 export const reviews = {

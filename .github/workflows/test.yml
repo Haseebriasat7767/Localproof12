@@ -36,7 +36,11 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Run tests
+      - name: Run tests (in-memory Postgres, zero setup)
+        working-directory: backend
+        run: npm run test:memory
+
+      - name: Run full suite (real Postgres)
         working-directory: backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/localproof_test

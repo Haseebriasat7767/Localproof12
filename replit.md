@@ -29,6 +29,18 @@ LocalProof is an AI-powered review management platform for local businesses. It 
 - **Frontend**: `cd frontend && npm start` → port 5000
 - **Backend**: `cd backend && npm start` → port 3001
 
+## Useful scripts (backend)
+- `npm test` — full suite against a real Postgres (needs `DATABASE_URL`)
+- `npm run test:memory` — full API suite against in-memory Postgres (pg-mem, zero setup)
+- `npm run test:unit` — db/config/services unit tests
+- `npm run smoke` — one-command full-stack verification: boots the API, seeds
+  the demo account, drives the whole product over HTTP, serves the frontend
+  build (35 checks)
+- `npm run seed:demo` — creates the demo account (demo@localproof.app /
+  demo1234) with sample reviews and feedback; the login page shows an
+  "Explore the live demo" button when it exists
+- `npm run migrate` — apply the schema explicitly (then set `SKIP_DB_INIT=1`)
+
 ## Environment Variables
 The following secrets need to be configured for full functionality:
 - `DATABASE_URL` — Auto-provisioned by Replit PostgreSQL

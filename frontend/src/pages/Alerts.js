@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AlertTriangle, Star, Code, Copy, Check } from 'lucide-react';
 import { business } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import WidgetPreview from '../components/WidgetPreview';
 
 export default function Alerts() {
   const { user } = useAuth();
@@ -36,21 +37,39 @@ export default function Alerts() {
         <p className="text-slate-500 text-sm mt-0.5">Manage your widget and track unhappy customers</p>
       </div>
 
-      {/* Embed code */}
-      <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Code size={18} className="text-brand-500" />
-          <h3 className="font-semibold text-white">Feedback Widget</h3>
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Embed code */}
+        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Code size={18} className="text-brand-500" />
+            <h3 className="font-semibold text-white">Feedback Widget</h3>
+          </div>
+          <p className="text-sm text-slate-400 mb-3">
+            Add this to your website. Happy customers (4-5★) are routed to your Google review page; unhappy ones (1-3★) get a private form — they never reach Google.
+          </p>
+          <div className="bg-[#0a0e1a] rounded-xl p-4 relative border border-white/10">
+            <pre className="text-xs text-emerald-400 overflow-x-auto whitespace-pre-wrap max-h-64">{embedCode}</pre>
+            <button onClick={copy}
+              className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-lg transition-all border border-white/10 flex items-center gap-1.5">
+              {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+            </button>
+          </div>
+          <p className="text-xs text-slate-600 mt-3">
+            Works on WordPress, Squarespace, Wix, Shopify, or any custom site — one script tag, no dependencies.
+          </p>
         </div>
-        <p className="text-sm text-slate-400 mb-3">
-          Add this to your website footer. It captures customer ratings privately — unhappy ones alert you before they post publicly.
-        </p>
-        <div className="bg-[#0a0e1a] rounded-xl p-4 relative border border-white/10">
-          <pre className="text-xs text-emerald-400 overflow-x-auto whitespace-pre-wrap">{embedCode}</pre>
-          <button onClick={copy}
-            className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-lg transition-all border border-white/10 flex items-center gap-1.5">
-            {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-          </button>
+
+        {/* Live preview */}
+        <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-5">
+          <h3 className="font-semibold text-white mb-1">Try it live</h3>
+          <p className="text-sm text-slate-400 mb-4">
+            This is exactly what your customers will see. Submissions are recorded — check them under Alerts below.
+          </p>
+          <WidgetPreview
+            userId={user.id}
+            businessName={user.businessName}
+            googleReviewUrl={user.googleReviewUrl}
+          />
         </div>
       </div>
 

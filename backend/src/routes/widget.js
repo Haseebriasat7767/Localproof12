@@ -91,9 +91,16 @@ router.post('/:userId/submit', submitLimiter, async (req, res) => {
       }
     }
 
+    // Happy customers (4-5 stars) are routed to the business's Google review
+    // page — that routing is the product. Unhappy ones stay private.
     const response = isUnhappy
-      ? { message: "Thank you for your feedback. We'll be in touch shortly." }
-      : { message: "Thank you! Would you mind sharing this on Google?", showReviewLink: true };
+      ? { message: "Thank you for your feedback. We'll be in touch shortly.", isUnhappy: true }
+      : {
+          message: "Thank you! Would you mind sharing this on Google?",
+          showReviewLink: true,
+          reviewUrl: user.googleReviewUrl || null,
+          businessName: user.businessName || ''
+        };
 
     res.json(response);
   } catch (err) {
@@ -114,28 +121,129 @@ router.get('/:userId/embed', async (req, res) => {
   const userId = parseUserId(req.params.userId);
   if (userId === null) return res.status(400).json({ error: 'Invalid business id' });
 
+  const user = await User.findById(userId);
+  if (!user) return res.status(404).json({ error: 'Business not found' });
+
   const apiBase = process.env.BACKEND_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
+  const businessName = JSON.stringify(user.businessName || 'us');
+  // The embed is a self-contained IIFE: no dependencies, works on any site.
+  // Happy raters (4-5) are routed to the business's Google review page;
+  // unhappy raters (1-3) get a private comment form instead — the review
+  // never reaches Google. That routing is the entire product.
   const embedCode = `
 <script>
 (function() {
+  var API = '${apiBase}/api/widget/${userId}/submit';
+  var NAME = ${businessName};
+  var css = 'font-family:system-ui,sans-serif;color:#0f172a;';
+  var box = document.createElement('div');
+  box.style = 'position:fixed;bottom:20px;right:20px;z-index:9999;width:300px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:18px;display:none;' + css;
   var btn = document.createElement('button');
-  btn.innerHTML = '⭐ Rate Us';
-  btn.style = 'position:fixed;bottom:20px;right:20px;background:#D97706;color:white;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;z-index:9999;';
-  btn.onclick = function() {
-    var rating = prompt('How would you rate us? (1-5)');
-    if (!rating) return;
-    var comment = prompt('Any comments? (optional)');
-    var name = prompt('Your name? (optional)') || 'Anonymous';
-    fetch('${apiBase}/api/widget/${userId}/submit', {
+  btn.innerHTML = '\\u2B50 Rate ' + (NAME || 'us');
+  btn.style = 'position:fixed;bottom:20px;right:20px;z-index:9999;background:#D97706;color:#fff;padding:12px 20px;border:none;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(217,119,6,.4);' + css;
+  var close = document.createElement('button');
+  close.innerHTML = '\\u00D7';
+  close.style = 'position:absolute;top:6px;right:10px;background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;';
+  box.appendChild(close);
+  close.onclick = function() { box.style.display = 'none'; btn.style.display = 'block'; };
+  btn.onclick = function() { btn.style.display = 'none'; box.style.display = 'block'; showRating(); };
+
+  function el(tag, style, text) {
+    var e = document.createElement(tag);
+    e.setAttribute('style', style + css);
+    if (text != null) e.innerHTML = text;
+    return e;
+  }
+  function clear() { while (box.lastChild) box.removeChild(box.lastChild); box.appendChild(close); }
+  var starRow = null;
+  function paint(n) {
+    if (!starRow) return;
+    Array.prototype.forEach.call(starRow.children, function(s) {
+      s.style.color = s._v <= n ? '#f59e0b' : '#e2e8f0';
+    });
+  }
+  function stars() {
+    var row = el('div', 'display:flex;gap:4px;margin:10px 0;');
+    for (var i = 1; i <= 5; i++) {
+      (function(v) {
+        var s = el('button', 'background:none;border:none;font-size:26px;cursor:pointer;padding:0;color:#e2e8f0;', '\\u2605');
+        s._v = v;
+        s.onmouseover = function() { paint(v); };
+        s.onclick = function() { pick(v); };
+        row.appendChild(s);
+      })(i);
+    }
+    row.onmouseleave = function() { paint(0); };
+    return row;
+  }
+  function showRating() {
+    clear();
+    box.appendChild(el('div', 'font-weight:600;font-size:14px;', 'How was your experience with ' + NAME + '?'));
+    starRow = stars();
+    box.appendChild(starRow);
+  }
+  function showHappy() {
+    clear();
+    box.appendChild(el('div', 'font-weight:600;font-size:14px;margin-bottom:4px;', 'Thanks so much! \\u2764\\uFE0F'));
+    box.appendChild(el('div', 'font-size:12px;color:#64748b;margin-bottom:10px;', 'Mind sharing it on Google? It takes 20 seconds.'));
+    var go = el('button', 'width:100%;background:#D97706;color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer;font-size:13px;font-weight:600;', 'Leave a Google review');
+    go.onclick = function() { window.open(d.reviewUrl, '_blank'); };
+    box.appendChild(go);
+  }
+  function showUnhappy() {
+    clear();
+    box.appendChild(el('div', 'font-weight:600;font-size:14px;margin-bottom:4px;', 'Sorry to hear that.'));
+    box.appendChild(el('div', 'font-size:12px;color:#64748b;margin-bottom:10px;', 'Tell us what happened — we\\'ll make it right. This stays private.'));
+    var ta = el('textarea', 'width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:13px;resize:vertical;', '');
+    ta.rows = 3; ta.placeholder = 'What went wrong?';
+    box.appendChild(ta);
+    var send = el('button', 'width:100%;margin-top:8px;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer;font-size:13px;font-weight:600;', 'Send feedback');
+    send.onclick = function() { submit(current, ta.value); };
+    box.appendChild(send);
+  }
+  var current = 0, d = {};
+  // Picking 1-3 stars opens the private form without sending anything yet;
+  // picking 4-5 stars records the rating immediately and routes to Google.
+  function pick(rating) {
+    if (rating >= 4) {
+      submit(rating, '');
+    } else {
+      current = rating;
+      showUnhappy();
+    }
+  }
+  function submit(rating, comment) {
+    fetch(API, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ customerName: name, rating: parseInt(rating), comment: comment || '' })
-    }).then(r => r.json()).then(d => alert(d.message));
-  };
+      body: JSON.stringify({ rating: rating, comment: comment || '' })
+    }).then(function(r) { return r.json(); })
+      .then(function(data) {
+        d = data;
+        if (rating >= 4) {
+          if (data.reviewUrl) { showHappy(); }
+          else {
+            clear();
+            box.appendChild(el('div', 'font-size:13px;', data.message || 'Thank you!'));
+          }
+        } else {
+          done(data.message);
+        }
+      })
+      .catch(function() {
+        clear();
+        box.appendChild(el('div', 'font-size:13px;', 'Could not send. Please try again.'));
+      });
+  }
+  function done(msg) {
+    clear();
+    box.appendChild(el('div', 'font-size:13px;', msg || 'Thank you — we\\'ll be in touch.'));
+  }
   document.body.appendChild(btn);
+  document.body.appendChild(box);
 })();
 </script>`;
-  res.json({ embedCode });
+  res.json({ embedCode, businessName: user.businessName || '' });
 });
 
 module.exports = router;

@@ -25,7 +25,11 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
   });
 
   beforeEach(async () => {
-    await pool.query('TRUNCATE reviews, feedback, users RESTART IDENTITY CASCADE');
+    // One TRUNCATE per table: pg-mem (the in-memory suite, `npm run
+    // test:memory`) does not support multi-table truncation.
+    for (const table of ['reviews', 'feedback', 'users']) {
+      await pool.query(`TRUNCATE ${table} RESTART IDENTITY CASCADE`);
+    }
   });
 
   const signup = async (overrides = {}) => {
@@ -472,6 +476,100 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       const res = await request(app).get('/healthz');
       assert.equal(res.status, 200);
       assert.equal(res.body.status, 'ok');
+    });
+  });
+
+  describe('google review routing', () => {
+    test('saves the Google review URL on the business profile', async () => {
+      const { res } = await signup();
+      const auth = { Authorization: `Bearer ${res.body.token}` };
+      const res2 = await request(app)
+        .patch('/api/business/profile')
+        .set(auth)
+        .send({ businessName: 'Cafe', googleReviewUrl: 'https://g.page/r/cafe/review' });
+      assert.equal(res2.status, 200);
+      assert.equal(res2.body.user.googleReviewUrl, 'https://g.page/r/cafe/review');
+    });
+
+    test('hands the review URL to happy widget visitors', async () => {
+      const { res, body } = await signup();
+      await pool.query(
+        "UPDATE users SET google_review_url = 'https://g.page/r/biz/review' WHERE email = $1",
+        [body.email]
+      );
+      const res2 = await request(app)
+        .post(`/api/widget/${res.body.user.id}/submit`)
+        .send({ rating: 5 });
+      assert.equal(res2.status, 200);
+      assert.equal(res2.body.showReviewLink, true);
+      assert.equal(res2.body.reviewUrl, 'https://g.page/r/biz/review');
+    });
+
+    test('reports a null review URL when the business has not set one', async () => {
+      const { res } = await signup();
+      const res2 = await request(app)
+        .post(`/api/widget/${res.body.user.id}/submit`)
+        .send({ rating: 4 });
+      assert.equal(res2.status, 200);
+      assert.equal(res2.body.showReviewLink, true);
+      assert.equal(res2.body.reviewUrl, null);
+    });
+
+    test('never sends unhappy visitors a review link', async () => {
+      const { res, body } = await signup();
+      await pool.query(
+        "UPDATE users SET google_review_url = 'https://g.page/r/biz/review' WHERE email = $1",
+        [body.email]
+      );
+      const res2 = await request(app)
+        .post(`/api/widget/${res.body.user.id}/submit`)
+        .send({ rating: 2, comment: 'Cold latte' });
+      assert.equal(res2.status, 200);
+      assert.equal(res2.body.reviewUrl, undefined);
+      assert.equal(res2.body.isUnhappy, true);
+    });
+
+    test('embed code routes happy raters and keeps the API base correct', async () => {
+      const { res } = await signup();
+      const res2 = await request(app).get(`/api/widget/${res.body.user.id}/embed`);
+      assert.equal(res2.status, 200);
+      assert.match(res2.body.embedCode, /\/api\/widget\/\d+\/submit/);
+      assert.match(res2.body.embedCode, /reviewUrl/);
+      assert.equal(res2.body.businessName, 'Test Biz');
+    });
+  });
+
+  describe('demo account', () => {
+    test('reports unavailable when no demo account exists', async () => {
+      const res = await request(app).get('/api/auth/demo');
+      assert.equal(res.status, 200);
+      assert.equal(res.body.available, false);
+    });
+
+    test('demo-login 404s when no demo account exists', async () => {
+      const res = await request(app).post('/api/auth/demo-login');
+      assert.equal(res.status, 404);
+    });
+
+    test('demo-login issues a session for the seeded demo account', async () => {
+      await pool.query(
+        `INSERT INTO users (name, email, password, business_name, plan, stripe_subscription_id)
+         VALUES ('Demo', 'demo@localproof.app', 'x', 'Demo Biz', 'pro', 'demo_sub')`
+      );
+
+      const status = await request(app).get('/api/auth/demo');
+      assert.equal(status.body.available, true);
+      assert.equal(status.body.email, 'demo@localproof.app');
+
+      const res = await request(app).post('/api/auth/demo-login');
+      assert.equal(res.status, 200);
+      assert.ok(res.body.token);
+      assert.equal(res.body.user.email, 'demo@localproof.app');
+      assert.equal(res.body.user.isDemo, true);
+
+      // The demo session is a real session: it can read paid routes.
+      const auth = { Authorization: `Bearer ${res.body.token}` };
+      assert.equal((await request(app).get('/api/reviews/stats').set(auth)).status, 200);
     });
   });
 });

@@ -133,6 +133,7 @@ const MIGRATIONS = `
     ALTER TABLE users ADD COLUMN IF NOT EXISTS google_account_id VARCHAR(255) DEFAULT '';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS google_location_id VARCHAR(255) DEFAULT '';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS google_location_name VARCHAR(255) DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS google_review_url VARCHAR(1024) DEFAULT '';
 `;
 
 // Applies the schema unconditionally. Used by `npm run migrate`.

@@ -12,11 +12,14 @@ router.use(auth, requireActive);
 // Update business profile
 router.patch('/profile', async (req, res, next) => {
   try {
-    const { businessName, tone } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { businessName, tone }
-    );
+    const { businessName, tone, googleReviewUrl } = req.body;
+    const updates = { businessName, tone };
+    // Only touch the review URL when the field is present, so a client that
+    // doesn't know about it can't blank a value the owner already saved.
+    if (googleReviewUrl !== undefined) {
+      updates.googleReviewUrl = String(googleReviewUrl).trim().slice(0, 1024);
+    }
+    const user = await User.findByIdAndUpdate(req.user.id, updates);
     res.json({ user });
   } catch (err) {
     next(err);

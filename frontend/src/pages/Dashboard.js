@@ -18,7 +18,11 @@ export default function Dashboard() {
   }, []);
 
   const handleUpgrade = async () => {
-    const res = await billing.checkout();
+    // Paid users manage (update/cancel) via the Stripe portal; everyone else
+    // is sent to checkout. Sending a subscriber to checkout again would just
+    // create a duplicate subscription.
+    const isPaid = user?.plan === 'pro' && !!user?.stripeSubscriptionId;
+    const res = isPaid ? await billing.portal() : await billing.checkout();
     window.location.href = res.data.url;
   };
 
@@ -63,7 +67,7 @@ export default function Dashboard() {
         </div>
         <button onClick={handleUpgrade}
           className="bg-white/10 text-white border border-white/10 px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
-          Manage
+          {isPaid ? 'Manage subscription' : 'Upgrade'}
         </button>
       </div>
 

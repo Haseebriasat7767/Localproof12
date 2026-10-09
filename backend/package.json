@@ -7,8 +7,11 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "node --test test/*.test.js",
-    "test:unit": "node --test test/services.test.js",
-    "migrate": "node scripts/migrate.js"
+    "test:memory": "node --require ./test/helpers/pgMem.js --test test/api.test.js test/services.test.js test/env.test.js test/deploy-config.test.js",
+    "test:unit": "node --test test/services.test.js test/db.test.js test/env.test.js test/deploy-config.test.js",
+    "migrate": "node scripts/migrate.js",
+    "seed:demo": "node scripts/seed-demo.js",
+    "smoke": "node scripts/smoke.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
+    "pg-mem": "^3.0.14",
     "supertest": "^7.2.2"
   }
 }

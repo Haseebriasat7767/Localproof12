@@ -7,7 +7,11 @@ import { Check, ArrowRight, Link2, RefreshCw, AlertTriangle } from 'lucide-react
 export default function Settings() {
   const { user, setUser } = useAuth();
   const { search } = useLocation();
-  const [form, setForm] = useState({ businessName: user?.businessName || '', tone: user?.tone || 'professional' });
+  const [form, setForm] = useState({
+    businessName: user?.businessName || '',
+    tone: user?.tone || 'professional',
+    googleReviewUrl: user?.googleReviewUrl || ''
+  });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -99,6 +103,17 @@ export default function Settings() {
             <input
               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
               value={form.businessName} onChange={e => setForm({ ...form, businessName: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-400 block mb-1.5">Google Review Link</label>
+            <input
+              type="url"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
+              placeholder="https://g.page/r/your-business/review"
+              value={form.googleReviewUrl} onChange={e => setForm({ ...form, googleReviewUrl: e.target.value })} />
+            <p className="text-xs text-slate-500 mt-2">
+              Happy customers (4-5★) from your widget are sent here. In Google Business Profile: Reviews → Share → copy the link.
+            </p>
           </div>
           <div>
             <label className="text-sm font-medium text-slate-400 block mb-1.5">Reply Tone</label>
@@ -198,17 +213,27 @@ export default function Settings() {
               Free trial active until {new Date(user.trialEndsAt).toLocaleDateString()}
             </p>
             <p className="text-xs text-emerald-400/70 mt-1">
-              You'll be billed $49 on {new Date(user.trialEndsAt).toLocaleDateString()}. Cancel anytime before.
+              No card needed during the trial. Subscribe before it ends to keep your reviews, alerts, and widget running.
             </p>
           </div>
         )}
         {user?.stripeSubscriptionId && (
           <p className="text-xs text-slate-500 mb-4">Subscription active — paid via Stripe</p>
         )}
-        <button onClick={manageSubscription}
-          className="bg-white/10 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
-          Manage Subscription
-        </button>
+        {user?.stripeSubscriptionId ? (
+          <button onClick={manageSubscription}
+            className="bg-white/10 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
+            Manage Subscription
+          </button>
+        ) : (
+          <button onClick={async () => {
+            const res = await billing.checkout();
+            window.location.href = res.data.url;
+          }}
+            className="bg-white text-[#0a0e1a] px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-all">
+            Subscribe now — $49/mo
+          </button>
+        )}
       </div>
 
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6">

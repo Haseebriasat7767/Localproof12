@@ -37,14 +37,19 @@ const User = {
       googleTokens: 'google_tokens',
       googleAccountId: 'google_account_id',
       googleLocationId: 'google_location_id',
-      googleLocationName: 'google_location_name'
+      googleLocationName: 'google_location_name',
+      googleReviewUrl: 'google_review_url'
     };
 
     for (const [key, val] of Object.entries(updates)) {
+      // Skip undefined so a partial update (e.g. profile without a tone)
+      // doesn't send an unbindable parameter — node-pg rejects those.
+      if (val === undefined) continue;
       const col = colMap[key] || key;
       fields.push(`${col} = $${i++}`);
       values.push(val);
     }
+    if (!fields.length) return User.findById(id);
     values.push(id);
 
     const { rows } = await pool.query(
@@ -79,6 +84,7 @@ const User = {
       googleAccountId: row.google_account_id,
       googleLocationId: row.google_location_id,
       googleLocationName: row.google_location_name,
+      googleReviewUrl: row.google_review_url || '',
       tone: row.tone,
       trialEndsAt: row.trial_ends_at,
       createdAt: row.created_at

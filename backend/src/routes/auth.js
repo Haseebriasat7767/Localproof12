@@ -82,6 +82,7 @@ router.post('/login', loginLimiter, async (req, res, next) => {
         name: user.name,
         email,
         businessName: user.businessName,
+        googleReviewUrl: user.googleReviewUrl,
         plan: user.plan,
         stripeSubscriptionId: user.stripeSubscriptionId,
         trialEndsAt: user.trialEndsAt
@@ -119,6 +120,58 @@ router.patch('/tone', authMiddleware, async (req, res, next) => {
     const { tone } = req.body;
     await User.findByIdAndUpdate(req.user.id, { tone });
     res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// --- Demo account -----------------------------------------------------------
+// A seeded demo account (see scripts/seed-demo.js) lets a prospective buyer
+// click through the whole product without signing up. The login page shows a
+// "try the demo" button only when the account exists on this deployment.
+const DEMO_EMAIL = () => (process.env.DEMO_EMAIL || 'demo@localproof.app').toLowerCase();
+
+const demoLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  message: { error: 'Too many demo logins. Please try again later.' }
+});
+
+// Public: does this deployment have a demo account? Drives the login page UI.
+router.get('/demo', async (req, res, next) => {
+  try {
+    const demo = await User.findOne({ email: DEMO_EMAIL() });
+    res.json({ available: !!demo, email: demo ? demo.email : null });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Public: logs in as the demo account. The account is meant to be shared, so
+// there is no password to guess — the endpoint just issues a session.
+router.post('/demo-login', demoLimiter, async (req, res, next) => {
+  try {
+    const demo = await User.findOne({ email: DEMO_EMAIL() });
+    if (!demo) return res.status(404).json({ error: 'No demo account on this deployment' });
+
+    const token = signToken(demo.id);
+    res.json({
+      token,
+      user: {
+        id: demo.id,
+        name: demo.name,
+        email: demo.email,
+        businessName: demo.businessName,
+        googleReviewUrl: demo.googleReviewUrl,
+        plan: demo.plan,
+        stripeSubscriptionId: demo.stripeSubscriptionId,
+        trialEndsAt: demo.trialEndsAt,
+        isDemo: true
+      }
+    });
   } catch (err) {
     next(err);
   }

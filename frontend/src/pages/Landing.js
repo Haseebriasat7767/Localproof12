@@ -223,7 +223,7 @@ export default function LandingPage() {
                   <Quote className="text-pink-400" size={24} />
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-white">AI Reply Drafts</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. Powered by Claude.</p>
+                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. One click, your voice.</p>
               </div>
             </FadeIn>
             <FadeIn delay={500}>
@@ -367,12 +367,12 @@ export default function LandingPage() {
               <span className="text-lg font-bold text-white">LocalProof</span>
             </div>
             <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-white transition">Privacy</a>
-              <a href="#" className="hover:text-white transition">Terms</a>
-              <a href="#" className="hover:text-white transition">Contact</a>
-              <a href="#" className="hover:text-white transition">Docs</a>
+              <a href="/privacy" className="hover:text-white transition">Privacy</a>
+              <a href="/terms" className="hover:text-white transition">Terms</a>
+              <a href="mailto:hello@localproof.app" className="hover:text-white transition">Contact</a>
+              <a href="/pricing" className="hover:text-white transition">Pricing</a>
             </div>
-            <p className="text-sm text-slate-600">© 2026 LocalProof</p>
+            <p className="text-sm text-slate-600">© {new Date().getFullYear()} LocalProof</p>
           </div>
         </div>
       </footer>

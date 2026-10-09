@@ -18,6 +18,8 @@ module.exports = async (req, res, next) => {
     user.isActive = !trialExpired || hasPaid;
     user.trialExpired = trialExpired;
     user.daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24)));
+    // The seeded demo account is shared by everyone evaluating the product.
+    user.isDemo = user.email === (process.env.DEMO_EMAIL || 'demo@localproof.app').toLowerCase();
 
     req.user = user;
     next();

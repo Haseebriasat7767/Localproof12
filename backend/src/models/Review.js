@@ -43,12 +43,14 @@ const Review = {
   // Inserts a review pulled from an external platform, skipping it if
   // (userId, reviewId) already exists — a sync can safely re-run over the
   // same reviews without creating duplicates or clobbering a reply already
-  // saved on one.
+  // saved on one. The conflict target is left implicit: the only unique
+  // constraint on the table besides the primary key is (user_id, review_id),
+  // so a bare ON CONFLICT DO NOTHING skips exactly the duplicate case.
   async upsertExternal({ userId, platform, reviewId, authorName, rating, text, date, sentiment, isFakeSuspected, fakeReasons }) {
     const { rows } = await pool.query(
       `INSERT INTO reviews (user_id, platform, review_id, author_name, rating, text, date, sentiment, is_fake_suspected, fake_reasons)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       ON CONFLICT (user_id, review_id) DO NOTHING
+       ON CONFLICT DO NOTHING
        RETURNING *`,
       [userId, platform, reviewId, authorName || 'Anonymous', rating, text || '', date || new Date(), sentiment || 'neutral', isFakeSuspected || false, fakeReasons || []]
     );
@@ -84,10 +86,14 @@ const Review = {
     };
 
     for (const [key, val] of Object.entries(updates)) {
+      // Skip undefined so a partial update doesn't send an unbindable
+      // parameter — node-pg rejects those.
+      if (val === undefined) continue;
       const col = colMap[key] || key;
       fields.push(`${col} = $${i++}`);
       values.push(val);
     }
+    if (!fields.length) return Review.findOne({ id });
     values.push(id);
 
     const { rows } = await pool.query(
