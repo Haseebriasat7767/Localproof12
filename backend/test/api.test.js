@@ -348,10 +348,10 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       assert.equal(rows[0].is_unhappy, true);
     });
 
-    test('treats 4 stars and up as happy', async () => {
+    test('records a 5-star rating as not unhappy', async () => {
       const userId = await newBusiness();
       const res = await request(app).post(`/api/widget/${userId}/submit`).send({ rating: 5 });
-      assert.equal(res.body.showReviewLink, true);
+      assert.equal(res.status, 200);
 
       const { rows } = await pool.query('SELECT is_unhappy FROM feedback WHERE user_id = $1', [userId]);
       assert.equal(rows[0].is_unhappy, false);
@@ -491,50 +491,42 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       assert.equal(res2.body.user.googleReviewUrl, 'https://g.page/r/cafe/review');
     });
 
-    test('hands the review URL to happy widget visitors', async () => {
+    test('gives every visitor the same review link, whatever they rate', async () => {
       const { res, body } = await signup();
       await pool.query(
         "UPDATE users SET google_review_url = 'https://g.page/r/biz/review' WHERE email = $1",
         [body.email]
       );
-      const res2 = await request(app)
-        .post(`/api/widget/${res.body.user.id}/submit`)
-        .send({ rating: 5 });
-      assert.equal(res2.status, 200);
-      assert.equal(res2.body.showReviewLink, true);
-      assert.equal(res2.body.reviewUrl, 'https://g.page/r/biz/review');
+      const id = res.body.user.id;
+      // Regression: the link used to be withheld from 1-3 star visitors.
+      // Review gating violates Google's review policy, so every visitor
+      // gets the same link regardless of rating.
+      const config = await request(app).get(`/api/widget/${id}/config`);
+      assert.equal(config.status, 200);
+      assert.equal(config.body.reviewUrl, 'https://g.page/r/biz/review');
+
+      const low = await request(app).post(`/api/widget/${id}/submit`).send({ rating: 2, comment: 'Cold latte' });
+      assert.equal(low.status, 200);
+      assert.equal(low.body.reviewUrl, undefined);
+      const { rows } = await pool.query('SELECT is_unhappy FROM feedback WHERE user_id = $1', [id]);
+      assert.equal(rows[0].is_unhappy, true, 'low ratings are still flagged for the owner');
     });
 
     test('reports a null review URL when the business has not set one', async () => {
       const { res } = await signup();
-      const res2 = await request(app)
-        .post(`/api/widget/${res.body.user.id}/submit`)
-        .send({ rating: 4 });
-      assert.equal(res2.status, 200);
-      assert.equal(res2.body.showReviewLink, true);
-      assert.equal(res2.body.reviewUrl, null);
+      const config = await request(app).get(`/api/widget/${res.body.user.id}/config`);
+      assert.equal(config.status, 200);
+      assert.equal(config.body.reviewUrl, null);
     });
 
-    test('never sends unhappy visitors a review link', async () => {
-      const { res, body } = await signup();
-      await pool.query(
-        "UPDATE users SET google_review_url = 'https://g.page/r/biz/review' WHERE email = $1",
-        [body.email]
-      );
-      const res2 = await request(app)
-        .post(`/api/widget/${res.body.user.id}/submit`)
-        .send({ rating: 2, comment: 'Cold latte' });
-      assert.equal(res2.status, 200);
-      assert.equal(res2.body.reviewUrl, undefined);
-      assert.equal(res2.body.isUnhappy, true);
-    });
-
-    test('embed code routes happy raters and keeps the API base correct', async () => {
+    test('embed code fetches config, shows both options, and keeps the API base correct', async () => {
       const { res } = await signup();
       const res2 = await request(app).get(`/api/widget/${res.body.user.id}/embed`);
       assert.equal(res2.status, 200);
       assert.match(res2.body.embedCode, /\/api\/widget\/\d+\/submit/);
-      assert.match(res2.body.embedCode, /reviewUrl/);
+      assert.match(res2.body.embedCode, /\/api\/widget\/\d+\/config/);
+      assert.match(res2.body.embedCode, /Leave a Google review/);
+      assert.match(res2.body.embedCode, /Send private feedback/);
       assert.equal(res2.body.businessName, 'Test Biz');
     });
   });

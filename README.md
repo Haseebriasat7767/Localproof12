@@ -1,20 +1,21 @@
 # LocalProof — AI Review Manager for Local Businesses
 
 LocalProof turns customer feedback into reputation growth for local businesses.
-A one-line embeddable widget asks every customer how their experience was:
-**happy customers (4-5★) are routed to the business's Google review page,
-unhappy ones (1-3★) get a private feedback form** — so problems are fixed
-before they ever become public reviews. A dashboard tracks every review,
+A one-line embeddable widget asks every customer how their experience was,
+then offers **the same two options to everyone**: a link to leave a Google
+review, and a separate private feedback form for the owner. Nobody is steered
+away from the public review link based on their rating (that would be review
+gating, which Google's policy prohibits). A dashboard tracks every review,
 drafts AI replies in the business's own tone, flags fake reviews, and emails
-the owner the moment someone is unhappy.
+the owner when private feedback comes in.
 
 **Monetization is built in:** 14-day free trial, then $49/month via Stripe
 (checkout + webhook + customer portal). The paywall is enforced server-side.
 
 ```
 Customer visits site → widget asks 1-5★
-  ├─ 4-5★ → "Leave a Google review" → opens the business's Google review link
-  └─ 1-3★ → private comment form → stored + owner emailed instantly
+  ├─ "Leave a Google review" → opens the business's Google review link (all ratings)
+  └─ "Send private feedback" → stored + owner emailed for low ratings (all ratings)
 Owner dashboard → all reviews, sentiment, fake flags, AI reply drafts, stats
 ```
 
@@ -27,19 +28,20 @@ Owner dashboard → all reviews, sentiment, fake flags, AI reply drafts, stats
 - **Payments:** Stripe (checkout, webhook, portal)
 - **Email:** Resend (unhappy-customer alerts)
 - **Reviews import:** Google Business Profile OAuth + sync (optional)
-- **Tests:** `node:test` + supertest — 69 API/service tests run with no external services (`npm run test:memory`), plus DB/config unit tests
+- **Tests:** `node:test` + supertest — 68 API/service tests run with no external services (`npm run test:memory`), plus DB/config unit tests
 - **Deploy:** Vercel (frontend + serverless API) — see [DEPLOY.md](DEPLOY.md)
 
 ## What's built
 
 - ✅ Auth: register / login / JWT, rate-limited, bcrypt password hashing
-- ✅ **Smart review routing widget** — happy → Google, unhappy → private form
-  (the core loop, fully wired end-to-end, embeddable in one script tag)
+- ✅ **Feedback widget** — Google review link + private feedback form shown to
+  every visitor (embeddable in one script tag; the review link is served by the
+  API, so changing it in Settings takes effect without re-pasting the snippet)
 - ✅ Review management: add manually, filter by sentiment/platform/status
 - ✅ **AI reply drafts** in a configurable tone (professional/friendly/casual)
 - ✅ Fake review detection (heuristic — no API cost)
 - ✅ Sentiment analysis (rule-based — no API cost)
-- ✅ Unhappy-customer email alerts (Resend)
+- ✅ Low-rating private-feedback email alerts (Resend)
 - ✅ **Stripe billing**: checkout, webhook (upgrades/downgrades accounts),
   customer portal; server-side paywall with 402 responses
 - ✅ Trial system: 14-day trial, `requireActive` gate on all paid routes
@@ -82,9 +84,9 @@ npm run smoke
 
 Boots the real API against an in-memory Postgres, seeds the demo account, and
 drives the entire product over HTTP — auth, paywall, reviews, AI drafts,
-widget routing, demo login — then serves the production frontend build and
-checks it. **35 checks, ~15 seconds, zero setup.** If this passes, the product
-works. (The full test suite: `npm run test:memory` — 69 API tests against an
+widget, demo login — then serves the production frontend build and
+checks it. **36 checks, ~15 seconds, zero setup.** If this passes, the product
+works. (The full test suite: `npm run test:memory` — 68 API tests against an
 in-memory DB; `npm test` runs everything against a real Postgres.)
 
 ## Deploy in ~15 minutes
@@ -109,7 +111,8 @@ See **[DEPLOY.md](DEPLOY.md)** for the full walkthrough. Short version:
 | `STRIPE_WEBHOOK_SECRET` | for billing | verifies webhook events |
 | `FRONTEND_URL` | for billing | Stripe redirect target |
 | `DEEPSEEK_API_KEY` | optional | AI drafts (canned fallback otherwise) |
-| `RESEND_API_KEY` | optional | unhappy-customer emails |
+| `RESEND_API_KEY` | optional | low-rating feedback emails |
+| `DATABASE_SSL_REJECT_UNAUTHORIZED` | optional | set to `false` only if your host's CA isn't trusted by Node (default verifies the certificate) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Google review import |
 | `DEMO_EMAIL` / `DEMO_PASSWORD` | optional | demo account credentials (defaults shown above) |
 

@@ -37,6 +37,7 @@ serves the Express app as a serverless function at `/api` (via
    | `JWT_SECRET` | any long random string (`openssl rand -hex 32`) |
    | `FRONTEND_URL` | `https://your-project.vercel.app` |
    | `BACKEND_URL` | same as `FRONTEND_URL` (used for widget embed code) |
+   | `DATABASE_SSL_REJECT_UNAUTHORIZED` | leave unset (verifies the DB certificate). Set to `false` only if your Postgres host's CA is not trusted by Node |
    | `STRIPE_SECRET_KEY` | from step 3 |
    | `STRIPE_PRICE_ID` | from step 3 |
    | `STRIPE_WEBHOOK_SECRET` | from step 4 |
@@ -78,7 +79,7 @@ DATABASE_URL='postgresql://...' npm run seed:demo
 
 Creates `demo@localproof.app` / `demo1234` (override with `DEMO_EMAIL` /
 `DEMO_PASSWORD`) with sample reviews, a saved reply, a flagged fake review,
-and unhappy-customer alerts. The login page then shows an
+and private-feedback alerts. The login page then shows an
 **"Explore the live demo"** button. The demo account is marked paid, so it
 never hits the trial paywall.
 

@@ -34,7 +34,7 @@ export default function Alerts() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white tracking-tight">Alerts & Widget</h2>
-        <p className="text-slate-500 text-sm mt-0.5">Manage your widget and track unhappy customers</p>
+        <p className="text-slate-500 text-sm mt-0.5">Manage your widget and review private feedback</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -45,7 +45,7 @@ export default function Alerts() {
             <h3 className="font-semibold text-white">Feedback Widget</h3>
           </div>
           <p className="text-sm text-slate-400 mb-3">
-            Add this to your website. Happy customers (4-5★) are routed to your Google review page; unhappy ones (1-3★) get a private form — they never reach Google.
+            Add this to your website. Every visitor who rates you sees your Google review link and a private feedback form. Nobody is steered away from the review link.
           </p>
           <div className="bg-[#0a0e1a] rounded-xl p-4 relative border border-white/10">
             <pre className="text-xs text-emerald-400 overflow-x-auto whitespace-pre-wrap max-h-64">{embedCode}</pre>
@@ -55,7 +55,7 @@ export default function Alerts() {
             </button>
           </div>
           <p className="text-xs text-slate-600 mt-3">
-            Works on WordPress, Squarespace, Wix, Shopify, or any custom site — one script tag, no dependencies.
+            Works on any site where you can add a script tag — one script tag, no dependencies.
           </p>
         </div>
 
@@ -77,13 +77,13 @@ export default function Alerts() {
       <div className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl">
         <div className="flex items-center gap-2 p-5 border-b border-white/5">
           <AlertTriangle size={18} className="text-red-400" />
-          <h3 className="font-semibold text-white">Unhappy Customer Alerts</h3>
+          <h3 className="font-semibold text-white">Private Feedback Alerts</h3>
           <span className="ml-auto bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-medium px-2.5 py-1 rounded-full">{alerts.length}</span>
         </div>
         <div className="divide-y divide-white/5">
           {alerts.length === 0 && (
             <div className="p-8 text-center text-slate-500 text-sm">
-              No unhappy alerts yet. Add the widget to your site to start capturing feedback.
+              No private feedback yet. Add the widget to your site to start capturing feedback.
             </div>
           )}
           {alerts.map(alert => (

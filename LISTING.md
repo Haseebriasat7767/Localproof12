@@ -11,7 +11,7 @@
 
 ## Tagline
 
-Turn happy customers into 5-star Google reviews — and catch unhappy ones before they post.
+Make it easy for every customer to review you on Google — and give them a private channel for feedback.
 
 ## Description
 
@@ -20,15 +20,16 @@ LocalProof is a complete, production-ready SaaS for local businesses
 their Google reviews).
 
 **The product:** a one-line embeddable widget asks every customer how their
-experience was. Happy customers (4-5★) are routed straight to the business's
-Google review page. Unhappy customers (1-3★) get a private feedback form —
-and the owner gets an instant email alert, so the problem is fixed before it
-ever becomes a public review. A dashboard tracks every review, flags fake
-ones, analyzes sentiment, and drafts AI replies in the business's own tone.
+experience was, then shows every customer the same two options: a link to
+leave a Google review, and a separate private feedback form. The owner gets an
+email alert when private feedback comes in. A dashboard tracks every review,
+flags suspicious ones, analyzes sentiment, and drafts AI replies in the
+business's own tone.
 
-**Monetization is built in and tested:** 14-day free trial → $49/month via
-Stripe (checkout, webhook, customer portal). The paywall is enforced
-server-side. No MRR yet — this is a fully built, pre-launch product.
+**Monetization is built in:** 14-day free trial → $49/month via Stripe
+(checkout, webhook, customer portal). The paywall is enforced server-side.
+Stripe has not yet been tested with live keys. No MRR yet: this is a
+pre-launch product.
 
 **What's included:**
 - React + Tailwind frontend (landing, pricing, auth, dashboard, reviews,
@@ -37,11 +38,11 @@ server-side. No MRR yet — this is a fully built, pre-launch product.
 - Stripe subscription billing end-to-end (checkout → webhook → account
   upgrade → portal)
 - Server-side trial paywall (402 responses, lapsed users can still pay)
-- Embeddable feedback widget with smart happy/unhappy routing (the core
-  product loop, fully wired)
+- Embeddable feedback widget: Google review link and private feedback form
+  shown to every visitor (the core product loop)
 - AI reply drafts (DeepSeek, with graceful fallback), sentiment analysis,
   fake-review detection
-- Unhappy-customer email alerts (Resend)
+- Private-feedback email alerts for low ratings (Resend)
 - Google Business Profile review import (OAuth + sync)
 - Seeded demo account + "Explore the live demo" button on the login page
 - Live widget preview inside the dashboard
@@ -73,7 +74,7 @@ customers; under $50/month at 100 paying customers.
 
 - MRR: $0 (pre-launch, fully built)
 - Pricing: $49/month, 14-day free trial
-- Tests: 69 API/service + 45 unit passing · Smoke: 35/35 end-to-end checks passing
+- Tests (last run): `npm test` against real PostgreSQL 92/92 · `test:memory` 68/68 · `test:unit` 47/47 · `smoke` 36/36 end-to-end checks
 - Code quality: migrated MongoDB→Postgres, server-side paywall, no leaked
   internals in errors, rate-limited public endpoints
 
@@ -81,13 +82,22 @@ customers; under $50/month at 100 paying customers.
 
 - Google Business Profile API access is gated by Google's manual approval
   (days-weeks); until then reviews are manual-entry or widget-captured
+- Google review import has not been tested against a live Google account
+- Stripe checkout, webhook and portal have not been tested with live keys.
+  Without Stripe keys, a customer whose trial has ended cannot pay
+- DeepSeek and Resend have not been tested with live keys (canned AI replies
+  and no alert emails until they are configured)
+- Legal pages (Privacy, Terms) are drafts and have not been reviewed by a lawyer.
+  Contact addresses (privacy@ / legal@ / hello@localproof.app) are placeholders
+  you must replace with mailboxes you control
+- The live demo account is shared and writable by anyone who logs in
 - No paying customers yet — marketing and launch are up to the buyer
 - AI drafts use DeepSeek (cheap); swap to any OpenAI-compatible provider
 
 ## Asking price
 
-**$5,000** — priced for a complete, tested, deployable SaaS with billing
-built in (comparable starter kits sell for $1-2k unfinished; this one runs).
+**$5,000** — the seller's asking price for the code, deployment guide and
+30 days of support. It is not backed by revenue or comparable sales data.
 Open to reasonable offers. Serious buyers only — happy to walk through a
 live demo (the demo account is one click from the login page).
 

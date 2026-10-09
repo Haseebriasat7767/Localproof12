@@ -64,7 +64,11 @@ function isLocalConnection(url) {
 
 const pool = new Pool({
   connectionString: connection.value,
-  ssl: isLocalConnection(connection.value) ? false : { rejectUnauthorized: false },
+  // Verify the server certificate by default. Set DATABASE_SSL_REJECT_UNAUTHORIZED=false
+  // only if your host's CA is not trusted by Node (see DEPLOY.md).
+  ssl: isLocalConnection(connection.value)
+    ? false
+    : { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false' },
   max: isServerless ? 1 : 10,
   // Release idle connections quickly on serverless so a frozen instance does
   // not hold one open.

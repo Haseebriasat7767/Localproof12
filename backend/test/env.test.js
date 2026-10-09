@@ -52,7 +52,7 @@ describe('checkEnv', () => {
 
   test('flags a partially configured feature, naming only the absent vars', () => {
     process.env.RESEND_API_KEY = 'set';
-    const alerts = checkEnv().degradedFeatures.find((f) => f.name === 'Unhappy-customer alerts');
+    const alerts = checkEnv().degradedFeatures.find((f) => f.name === 'Low-rating feedback alerts');
     assert.deepEqual(alerts.absent, ['RESEND_FROM_EMAIL']);
   });
 

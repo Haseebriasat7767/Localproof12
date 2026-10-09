@@ -13,7 +13,7 @@ function getStripe() {
 router.post('/checkout', auth, async (req, res, next) => {
   try {
     const stripe = getStripe();
-    if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+    if (!stripe) return res.status(503).json({ error: 'Online billing is not set up on this server yet. Contact the seller to subscribe.' });
 
     let customerId = req.user.stripeCustomerId;
     if (!customerId) {
@@ -43,7 +43,7 @@ router.post('/checkout', auth, async (req, res, next) => {
 // Stripe webhook
 router.post('/webhook', async (req, res, next) => {
   const stripe = getStripe();
-  if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+  if (!stripe) return res.status(503).json({ error: 'Online billing is not set up on this server yet. Contact the seller to subscribe.' });
 
   const sig = req.headers['stripe-signature'];
   let event;
@@ -73,7 +73,7 @@ router.post('/webhook', async (req, res, next) => {
 router.post('/portal', auth, async (req, res, next) => {
   try {
     const stripe = getStripe();
-    if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+    if (!stripe) return res.status(503).json({ error: 'Online billing is not set up on this server yet. Contact the seller to subscribe.' });
 
     const session = await stripe.billingPortal.sessions.create({
       customer: req.user.stripeCustomerId,

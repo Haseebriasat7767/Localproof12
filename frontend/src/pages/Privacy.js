@@ -31,7 +31,7 @@ export default function Privacy() {
           <h2 className="text-lg font-semibold text-white">How we use it</h2>
           <ul className="list-disc list-inside space-y-1 text-slate-400">
             <li>To provide the service: dashboards, review management, AI reply drafts, and the feedback widget.</li>
-            <li>To send unhappy-customer alert emails to you (via our email provider) when a widget visitor rates 1-3 stars.</li>
+            <li>To send alert emails to you (via our email provider) when a widget visitor sends private feedback rated 1-3 stars.</li>
             <li>To process subscriptions and send billing-related communications (via Stripe).</li>
           </ul>
           <p className="text-slate-400">

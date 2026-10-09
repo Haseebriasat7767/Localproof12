@@ -28,12 +28,13 @@ export default function Terms() {
 
           <h2 className="text-lg font-semibold text-white">Acceptable use — review integrity</h2>
           <p className="text-slate-400">
-            LocalProof routes genuine customer sentiment: satisfied customers are invited to leave a
-            public Google review; dissatisfied customers are invited to give private feedback first.
-            You agree not to use the service to generate, purchase, or incentivize fake reviews, to
-            suppress genuine negative reviews, or to misrepresent your business. The service is
-            designed to comply with Google's review policies and FTC endorsement guidelines; misuse
-            may result in suspension.
+            The widget shows every visitor the same options: a link to your Google review page,
+            and a separate private feedback form. You agree not to use LocalProof to filter, hide or
+            discourage negative reviews, to selectively ask only satisfied customers for reviews, to
+            generate, buy, or incentivize fake reviews, or to misrepresent your business. You are
+            responsible for following Google's review policies and applicable advertising rules
+            (including the FTC rule on fake and suppressed reviews) in how you use the widget. We
+            provide the tool; we do not provide legal advice. Misuse may result in suspension.
           </p>
 
           <h2 className="text-lg font-semibold text-white">Your account</h2>

@@ -132,7 +132,14 @@ describe('connection pool', () => {
     const local = loadDb({ DATABASE_URL: 'postgresql://postgres@localhost:5432/app' }).pool;
     const remote = loadDb(BASE).pool;
     assert.equal(local.options.ssl, false);
-    assert.deepEqual(remote.options.ssl, { rejectUnauthorized: false });
+    // Remote databases verify the server certificate by default. Disabling
+    // verification (man-in-the-middle exposure) must be an explicit opt-out.
+    assert.deepEqual(remote.options.ssl, { rejectUnauthorized: true });
+  });
+
+  test('lets an operator opt out of certificate verification explicitly', () => {
+    const optOut = loadDb({ ...BASE, DATABASE_SSL_REJECT_UNAUTHORIZED: 'false' }).pool;
+    assert.deepEqual(optOut.options.ssl, { rejectUnauthorized: false });
   });
 
   test('treats 127.0.0.1 and ::1 as local too, not just the word localhost', () => {

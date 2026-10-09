@@ -112,7 +112,7 @@ export default function Settings() {
               placeholder="https://g.page/r/your-business/review"
               value={form.googleReviewUrl} onChange={e => setForm({ ...form, googleReviewUrl: e.target.value })} />
             <p className="text-xs text-slate-500 mt-2">
-              Happy customers (4-5★) from your widget are sent here. In Google Business Profile: Reviews → Share → copy the link.
+              Visitors who rate you see this link in the widget. In Google Business Profile: Reviews → Share → copy the link.
             </p>
           </div>
           <div>

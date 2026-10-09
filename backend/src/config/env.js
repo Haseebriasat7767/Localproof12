@@ -29,7 +29,7 @@ const FEATURES = [
     consequence: 'drafts silently fall back to generic canned text'
   },
   {
-    name: 'Unhappy-customer alerts',
+    name: 'Low-rating feedback alerts',
     vars: ['RESEND_API_KEY', 'RESEND_FROM_EMAIL'],
     consequence: 'alert emails are never delivered'
   },

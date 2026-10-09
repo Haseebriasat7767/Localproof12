@@ -112,24 +112,26 @@ async function main() {
   check('partial profile update does not 500', partial.status === 200 && partial.body.user.tone === 'casual');
 
   console.log('\n== widget (public, the core loop) ==');
+  const config = await api('GET', `/api/widget/${me.body.user.id}/config`);
+  check('widget config serves the review url', config.body.reviewUrl === 'https://g.page/r/smoke-biz/review', JSON.stringify(config.body));
   const happy = await api('POST', `/api/widget/${me.body.user.id}/submit`, { body: { rating: 5, customerName: 'Happy Customer' } });
-  check('happy visitor gets review url', happy.body.showReviewLink === true && happy.body.reviewUrl === 'https://g.page/r/smoke-biz/review', JSON.stringify(happy.body));
+  check('5-star rating is recorded', happy.status === 200, JSON.stringify(happy.body));
   const unhappy = await api('POST', `/api/widget/${me.body.user.id}/submit`, { body: { rating: 2, customerName: 'Sad Customer', customerEmail: 'sad@test.com', comment: 'Cold coffee' } });
-  check('unhappy visitor stays private (no review url)', unhappy.body.isUnhappy === true && unhappy.body.reviewUrl === undefined, JSON.stringify(unhappy.body));
+  check('low rating is recorded and private feedback accepted', unhappy.status === 200 && unhappy.body.reviewUrl === undefined, JSON.stringify(unhappy.body));
   const badRating = await api('POST', `/api/widget/${me.body.user.id}/submit`, { body: { rating: 9 } });
   check('invalid rating rejected 400', badRating.status === 400);
   const alerts = await api('GET', '/api/business/alerts', { token });
   check('unhappy feedback appears in alerts', alerts.body.alerts.length === 1 && alerts.body.alerts[0].customerName === 'Sad Customer');
   const embed = await api('GET', `/api/widget/${me.body.user.id}/embed`);
-  check('embed code contains submit endpoint and routing', /\/api\/widget\/\d+\/submit/.test(embed.body.embedCode) && /reviewUrl/.test(embed.body.embedCode));
+  check('embed code contains submit and config endpoints', /\/api\/widget\/\d+\/submit/.test(embed.body.embedCode) && /\/api\/widget\/\d+\/config/.test(embed.body.embedCode));
   {
     // The embed is shipped to customer websites as-is, so it must parse as
-    // valid JS and contain the happy/unhappy routing — a broken snippet is a
+    // valid JS and show both options to every visitor — a broken snippet is a
     // broken product for every site that installs it.
     const match = embed.body.embedCode.match(/<script>([\s\S]*)<\/script>/);
     let ok = false;
     try { new Function(match[1]); ok = true; } catch {}
-    check('embed script is syntactically valid JS', ok && /pick\(v\)/.test(match[1]) && /showHappy/.test(match[1]) && /showUnhappy/.test(match[1]));
+    check('embed script is syntactically valid JS', ok && /showStars\(\)/.test(match[1]) && /showChoice\(\)/.test(match[1]) && /REVIEW_URL/.test(match[1]));
   }
 
   console.log('\n== demo account ==');
