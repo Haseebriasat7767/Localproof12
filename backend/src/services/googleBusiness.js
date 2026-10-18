@@ -18,8 +18,11 @@ const OAUTH_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const ACCOUNTS_URL = 'https://mybusinessaccountmanagement.googleapis.com/v1/accounts';
 const LOCATIONS_URL = (accountId) =>
   `https://mybusinessbusinessinformation.googleapis.com/v1/${accountId}/locations?readMask=name,title`;
-const REVIEWS_URL = (accountId, locationId) =>
-  `https://mybusiness.googleapis.com/v4/${accountId}/${locationId}/reviews`;
+const REVIEWS_URL = (accountId, locationId, pageToken) => {
+  const params = new URLSearchParams({ pageSize: '50' });
+  if (pageToken) params.set('pageToken', pageToken);
+  return `https://mybusiness.googleapis.com/v4/${accountId}/${locationId}/reviews?${params.toString()}`;
+};
 
 const SCOPE = 'https://www.googleapis.com/auth/business.manage';
 
@@ -103,10 +106,19 @@ async function listLocations(accessToken, accountId) {
 }
 
 async function listReviews(accessToken, accountId, locationId) {
-  const { data } = await axios.get(REVIEWS_URL(accountId, locationId), {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-  return data.reviews || [];
+  const reviews = [];
+  let pageToken;
+  let pages = 0;
+  do {
+    const { data } = await axios.get(REVIEWS_URL(accountId, locationId, pageToken), {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    reviews.push(...(data.reviews || []));
+    pageToken = data.nextPageToken || null;
+    pages += 1;
+    // Defensive cap protects against a broken/repeating upstream page token.
+  } while (pageToken && pages < 50);
+  return reviews;
 }
 
 // Google's star rating comes back as an enum string, not a number.
