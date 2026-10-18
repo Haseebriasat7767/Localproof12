@@ -223,7 +223,7 @@ export default function LandingPage() {
                   <Quote className="text-pink-400" size={24} />
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-white">AI Reply Drafts</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. Powered by Claude.</p>
+                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. Powered by DeepSeek.</p>
               </div>
             </FadeIn>
             <FadeIn delay={500}>
@@ -231,8 +231,8 @@ export default function LandingPage() {
                 <div className="w-11 h-11 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-cyan-500/20 transition border border-cyan-500/20">
                   <AlertTriangle className="text-cyan-400" size={24} />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-white">Fake Detection</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Automatically flag suspicious reviews. Protect your reputation from competitors and bots.</p>
+                <h3 className="text-lg font-semibold mb-3 text-white">Suspicious Review Signals</h3>
+                <p className="text-slate-400 leading-relaxed text-sm">Flag potentially suspicious review patterns for human review; signals are not proof that a review is fake.</p>
               </div>
             </FadeIn>
           </div>
