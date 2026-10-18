@@ -18,8 +18,14 @@ export default function Dashboard() {
   }, []);
 
   const handleUpgrade = async () => {
-    const res = await billing.checkout();
-    window.location.href = res.data.url;
+    try {
+      const hasSubscription = user?.plan === 'pro' && !!user?.stripeSubscriptionId;
+      const res = hasSubscription ? await billing.portal() : await billing.checkout();
+      if (res.data.url) window.location.href = res.data.url;
+    } catch (err) {
+      console.error('Could not open billing:', err.response?.data?.error || err.message);
+      window.alert(err.response?.data?.error || 'Could not open billing. Please try again or visit Settings.');
+    }
   };
 
   if (loading) return (
@@ -63,7 +69,7 @@ export default function Dashboard() {
         </div>
         <button onClick={handleUpgrade}
           className="bg-white/10 text-white border border-white/10 px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition-all">
-          Manage
+          {isPaid ? 'Manage Subscription' : 'Upgrade'}
         </button>
       </div>
 
