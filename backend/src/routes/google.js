@@ -65,7 +65,8 @@ router.get('/locations', auth, async (req, res, next) => {
   try {
     if (!req.user.googleConnected) return res.status(400).json({ error: 'Google account not connected' });
 
-    const accessToken = await accessTokenFor(req.user);
+    const connectedUser = await User.findById(req.user.id, { includeGoogleTokens: true });
+    const accessToken = await accessTokenFor(connectedUser);
     const accounts = await google.listAccounts(accessToken);
 
     const locations = [];
@@ -116,8 +117,9 @@ router.post('/sync', auth, requireActive, async (req, res, next) => {
     if (!req.user.googleConnected) return res.status(400).json({ error: 'Google account not connected' });
     if (!req.user.googleLocationId) return res.status(400).json({ error: 'No Google location linked yet' });
 
-    const accessToken = await accessTokenFor(req.user);
-    const googleReviews = await google.listReviews(accessToken, req.user.googleAccountId, req.user.googleLocationId);
+    const connectedUser = await User.findById(req.user.id, { includeGoogleTokens: true });
+    const accessToken = await accessTokenFor(connectedUser);
+    const googleReviews = await google.listReviews(accessToken, connectedUser.googleAccountId, connectedUser.googleLocationId);
 
     let imported = 0;
     for (const raw of googleReviews) {
