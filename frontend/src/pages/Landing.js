@@ -246,9 +246,9 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold text-white mb-12 tracking-tight">How it works</h2>
             <div className="grid sm:grid-cols-3 gap-8">
               {[
-                { value: 1, suffix: "", desc: "line of code to install the widget", prefix: "" },
-                { value: 5, suffix: "-star", desc: "on the same neutral feedback flow", prefix: "" },
-                { value: 3, suffix: "-star & below", desc: "to capture honest customer sentiment", prefix: "" }
+                { value: 1, suffix: "", desc: "simple embed to install the widget", prefix: "" },
+                { value: 5, suffix: "-point scale", desc: "for honest customer ratings", prefix: "" },
+                { value: 100, suffix: "% neutral", desc: "same flow for every customer", prefix: "" }
               ].map((stat, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <span className="text-5xl sm:text-6xl font-bold bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
