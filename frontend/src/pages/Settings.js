@@ -7,7 +7,7 @@ import { Check, ArrowRight, Link2, RefreshCw, AlertTriangle } from 'lucide-react
 export default function Settings() {
   const { user, setUser } = useAuth();
   const { search } = useLocation();
-  const [form, setForm] = useState({ businessName: user?.businessName || '', tone: user?.tone || 'professional' });
+  const [form, setForm] = useState({ businessName: user?.businessName || '', tone: user?.tone || 'professional', reviewUrl: user?.reviewUrl || '' });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -99,6 +99,15 @@ export default function Settings() {
             <input
               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
               value={form.businessName} onChange={e => setForm({ ...form, businessName: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-400 block mb-1.5">Public review link (optional)</label>
+            <input
+              type="url"
+              placeholder="https://g.page/r/your-business/review"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition"
+              value={form.reviewUrl} onChange={e => setForm({ ...form, reviewUrl: e.target.value })} />
+            <p className="text-xs text-slate-500 mt-2">Customers of every rating can choose whether to share feedback publicly. Only HTTPS links are accepted.</p>
           </div>
           <div>
             <label className="text-sm font-medium text-slate-400 block mb-1.5">Reply Tone</label>

@@ -72,3 +72,39 @@ describe('generateReplyDraft', () => {
     assert.notEqual(professional, casual);
   });
 });
+
+
+describe('user API serialization', () => {
+  test('does not expose stored Google OAuth tokens in the default user object', () => {
+    const User = require('../src/models/User');
+    const user = User._format({
+      id: 7,
+      name: 'Test Owner',
+      email: 'owner@example.com',
+      business_name: 'Test Business',
+      plan: 'trialing',
+      stripe_customer_id: '',
+      stripe_subscription_id: '',
+      google_connected: true,
+      google_tokens: { accessToken: 'private-access-token', refreshToken: 'private-refresh-token' },
+      google_account_id: 'accounts/123',
+      google_location_id: 'locations/456',
+      google_location_name: 'Test Location',
+      review_url: 'https://example.com/review',
+      tone: 'professional',
+      trial_ends_at: new Date(),
+      created_at: new Date()
+    });
+    assert.equal(Object.prototype.hasOwnProperty.call(user, 'googleTokens'), false);
+    assert.equal(user.reviewUrl, 'https://example.com/review');
+  });
+
+  test('includes OAuth tokens only when explicitly requested by server code', () => {
+    const User = require('../src/models/User');
+    const user = User._format({
+      id: 7,
+      google_tokens: { accessToken: 'private-access-token', refreshToken: 'private-refresh-token' }
+    }, false, true);
+    assert.equal(user.googleTokens.accessToken, 'private-access-token');
+  });
+});

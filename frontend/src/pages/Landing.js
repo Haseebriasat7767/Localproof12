@@ -57,7 +57,7 @@ export default function LandingPage() {
       <div className="text-center">
         <Globe className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Widget Preview</h3>
-        <p className="text-slate-400 max-w-md mx-auto">Visitors get a one-click rating. Happy → Google. Unhappy → private feedback.</p>
+        <p className="text-slate-400 max-w-md mx-auto">Every customer can rate their experience, leave a comment, and choose whether to share publicly.</p>
         <div className="mt-6 mx-auto max-w-sm">
           <div className="p-6 bg-white/5 rounded-xl text-center text-slate-300 text-sm border border-white/10">
             <Star size={20} className="mx-auto mb-2 text-yellow-400" />
@@ -81,7 +81,7 @@ export default function LandingPage() {
       <div className="text-center">
         <RefreshCw className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Customer Flow</h3>
-        <p className="text-slate-400 max-w-md mx-auto">Visit site → widget pops up → rate → routed to Google Review or private form.</p>
+        <p className="text-slate-400 max-w-md mx-auto">Open the widget → share honest feedback → optionally leave a public review.</p>
       </div>
     ),
   };
@@ -123,13 +123,13 @@ export default function LandingPage() {
           </FadeIn>
           <FadeIn delay={100}>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-white">
-              Turn happy customers into<br />
-              <span className="bg-gradient-to-r from-brand-500 via-brand-300 to-success-400 bg-clip-text text-transparent">5-star reviews</span>
+              Turn customer feedback into<br />
+              <span className="bg-gradient-to-r from-brand-500 via-brand-300 to-success-400 bg-clip-text text-transparent">better experiences</span>
             </h1>
           </FadeIn>
           <FadeIn delay={200}>
             <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mt-8 mb-10 leading-relaxed">
-              The smart review routing system that sends happy customers to Google and unhappy ones to a private feedback form — before they ever post publicly.
+              Collect honest customer feedback, respond to reviews faster, and learn what your business can improve — without filtering who gets to leave a public review.
             </p>
           </FadeIn>
           <FadeIn delay={300}>
@@ -160,7 +160,7 @@ export default function LandingPage() {
       <FadeIn>
         <section className="py-8 border-y border-white/5">
           <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8 text-slate-500 text-sm">
-            <span className="flex items-center gap-2"><Shield size={16} className="text-slate-400" /> Built to Google review-gating guidelines</span>
+            <span className="flex items-center gap-2"><Shield size={16} className="text-slate-400" /> Designed for honest, unbiased feedback</span>
             <span className="flex items-center gap-2"><Award size={16} className="text-slate-400" /> 14-day free trial</span>
             <span className="flex items-center gap-2"><Zap size={16} className="text-slate-400" /> 30-Second Setup</span>
             <span className="flex items-center gap-2"><CheckCircle size={16} className="text-slate-400" /> Cancel Anytime</span>
@@ -174,7 +174,7 @@ export default function LandingPage() {
           <FadeIn>
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">Everything you need to grow your reputation</h2>
-              <p className="text-slate-400 max-w-xl mx-auto mt-4 text-lg">Simple tools that protect your reputation and grow your Google reviews on autopilot.</p>
+              <p className="text-slate-400 max-w-xl mx-auto mt-4 text-lg">Simple tools to understand customer feedback, manage reviews, and respond consistently.</p>
             </div>
           </FadeIn>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -183,10 +183,10 @@ export default function LandingPage() {
                 <div className="w-11 h-11 bg-brand-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-500/20 transition border border-brand-500/20">
                   <Brain className="text-brand-500" size={24} />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-white">Smart Review Routing</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Happy visitors (4-5 stars) are sent directly to your Google review page. Unhappy ones see a private feedback form — never a public complaint.</p>
+                <h3 className="text-lg font-semibold mb-3 text-white">Honest Feedback Collection</h3>
+                <p className="text-slate-400 leading-relaxed text-sm">Every customer can share private feedback and has the same option to leave a public review, regardless of their rating.</p>
                 <div className="mt-6 flex items-center gap-2 text-sm text-brand-500">
-                  <CheckCircle size={14} /> <span>Google & FTC compliant</span>
+                  <CheckCircle size={14} /> <span>Unbiased review requests</span>
                 </div>
               </div>
             </FadeIn>
@@ -196,7 +196,7 @@ export default function LandingPage() {
                   <ShieldCheck className="text-emerald-400" size={24} />
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-white">Real Reviews, No Fear</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">100% compliant with Google & FTC guidelines. We never gate or fake — we route genuine sentiment.</p>
+                <p className="text-slate-400 leading-relaxed text-sm">Invite every customer to share honest feedback. No rating-based review gating or pressure to leave positive reviews.</p>
               </div>
             </FadeIn>
             <FadeIn delay={200}>
@@ -223,7 +223,7 @@ export default function LandingPage() {
                   <Quote className="text-pink-400" size={24} />
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-white">AI Reply Drafts</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. Powered by Claude.</p>
+                <p className="text-slate-400 leading-relaxed text-sm">Respond to reviews faster with AI-generated drafts matching your brand tone. Powered by DeepSeek.</p>
               </div>
             </FadeIn>
             <FadeIn delay={500}>
@@ -231,8 +231,8 @@ export default function LandingPage() {
                 <div className="w-11 h-11 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-cyan-500/20 transition border border-cyan-500/20">
                   <AlertTriangle className="text-cyan-400" size={24} />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-white">Fake Detection</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">Automatically flag suspicious reviews. Protect your reputation from competitors and bots.</p>
+                <h3 className="text-lg font-semibold mb-3 text-white">Suspicious Review Signals</h3>
+                <p className="text-slate-400 leading-relaxed text-sm">Flag potentially suspicious review patterns for human review; signals are not proof that a review is fake.</p>
               </div>
             </FadeIn>
           </div>
@@ -246,9 +246,9 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold text-white mb-12 tracking-tight">How it works</h2>
             <div className="grid sm:grid-cols-3 gap-8">
               {[
-                { value: 1, suffix: "", desc: "line of code to install the widget", prefix: "" },
-                { value: 5, suffix: "-star", desc: "reviews get routed straight to Google", prefix: "" },
-                { value: 3, suffix: "-star & below", desc: "reviews are caught privately, before they post", prefix: "" }
+                { value: 1, suffix: "", desc: "simple embed to install the widget", prefix: "" },
+                { value: 5, suffix: "-point scale", desc: "for honest customer ratings", prefix: "" },
+                { value: 100, suffix: "% neutral", desc: "same flow for every customer", prefix: "" }
               ].map((stat, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <span className="text-5xl sm:text-6xl font-bold bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
@@ -295,8 +295,8 @@ export default function LandingPage() {
             <p className="text-slate-400 mb-12 max-w-xl mx-auto">No review software background needed. Install the widget, and every future customer interaction is already covered.</p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
-                { title: "You don't chase reviews manually", desc: "The widget asks every customer once, automatically routes them, and logs the result — no spreadsheets." },
-                { title: "You see problems before Google does", desc: "A 1-3 star rating goes to your private inbox first, with an instant email alert so you can make it right." },
+                { title: "You collect feedback consistently", desc: "The widget gives every customer the same opportunity to share honest feedback, with no rating-based routing." },
+                { title: "You respond to customer concerns", desc: "Private feedback and low-rating alerts help you follow up directly and improve the customer experience." },
                 { title: "You reply faster", desc: "AI drafts a reply in your tone in seconds. You approve or edit — it never posts without you." }
               ].map((t, i) => (
                 <div key={i} className="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-left hover:border-white/20 transition duration-300">
@@ -316,8 +316,8 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold text-white text-center mb-12 tracking-tight">Frequently asked questions</h2>
           </FadeIn>
           {[
-            { question: "What exactly does my customer see?", answer: "They get a one-click rating request. If happy (4-5 stars), they're sent to your Google review page. If less satisfied, they land on a private, internal form only you can see." },
-            { question: "Is this allowed by Google?", answer: "Absolutely. We never fake reviews or filter. We route genuine sentiment — public praise to Google, private feedback to your inbox. Fully compliant with Google & FTC rules." },
+            { question: "What exactly does my customer see?", answer: "They get a one-click rating request. Everyone sees the same feedback flow and can choose whether to share publicly." },
+            { question: "Is this allowed by Google?", answer: "LocalProof is designed to avoid rating-based review gating. Every customer can share private feedback, and the same optional public-review link is shown regardless of rating." },
             { question: "I'm not technical — will I break my website?", answer: "No. One line of code. We have step-by-step guides for Squarespace, Wix, WordPress. And a real human answers if you get stuck." }
           ].map((item, idx) => (
             <FadeIn key={idx} delay={idx * 100}>
@@ -344,11 +344,11 @@ export default function LandingPage() {
               <span className="text-brand-500">Simple pricing</span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
-              Ready to grow your<br />
-              <span className="bg-gradient-to-r from-brand-500 to-success-400 bg-clip-text text-transparent">Google reviews?</span>
+              Ready to improve your<br />
+              <span className="bg-gradient-to-r from-brand-500 to-success-400 bg-clip-text text-transparent">customer experience?</span>
             </h2>
             <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">
-              Unlimited AI drafts, review tracking, and smart routing widget — $49/month. Setup takes 30 seconds.
+              AI reply drafts, review tracking, and a neutral feedback widget — $49/month. Setup takes minutes.
             </p>
             <a href="/register" className="inline-flex items-center gap-2 bg-white text-[#0a0e1a] px-10 py-4 rounded-full font-semibold text-lg hover:bg-slate-200 transition-all shadow-xl shadow-white/10">
               Start free trial <ArrowRight size={20} />

@@ -10,7 +10,7 @@ const features = [
   { icon: Shield, text: 'Fake review detection' },
   { icon: Globe, text: 'Embeddable feedback widget' },
   { icon: CheckCircle, text: 'Unhappy customer alerts (email)' },
-  { icon: CheckCircle, text: 'Track reviews across Google, Yelp & more' },
+  { icon: CheckCircle, text: 'Import Google reviews when API access is approved; add other reviews manually' },
   { icon: CheckCircle, text: 'Cancel anytime' }
 ];
 
