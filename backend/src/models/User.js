@@ -17,9 +17,9 @@ const User = {
     return rows[0] ? User._format(rows[0], true) : null;
   },
 
-  async findById(id) {
+  async findById(id, { includeGoogleTokens = false } = {}) {
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    return rows[0] ? User._format(rows[0]) : null;
+    return rows[0] ? User._format(rows[0], false, includeGoogleTokens) : null;
   },
 
   async findByIdAndUpdate(id, updates) {
@@ -29,6 +29,7 @@ const User = {
 
     const colMap = {
       businessName: 'business_name',
+      reviewUrl: 'review_url',
       tone: 'tone',
       plan: 'plan',
       stripeCustomerId: 'stripe_customer_id',
@@ -64,7 +65,7 @@ const User = {
     return bcrypt.compare(plaintext, hashedPassword);
   },
 
-  _format(row, includePassword = false) {
+  _format(row, includePassword = false, includeGoogleTokens = false) {
     const obj = {
       id: row.id,
       _id: row.id,
@@ -75,7 +76,7 @@ const User = {
       stripeCustomerId: row.stripe_customer_id,
       stripeSubscriptionId: row.stripe_subscription_id,
       googleConnected: row.google_connected,
-      googleTokens: row.google_tokens,
+      reviewUrl: row.review_url || '',
       googleAccountId: row.google_account_id,
       googleLocationId: row.google_location_id,
       googleLocationName: row.google_location_name,
@@ -83,6 +84,7 @@ const User = {
       trialEndsAt: row.trial_ends_at,
       createdAt: row.created_at
     };
+    if (includeGoogleTokens) obj.googleTokens = row.google_tokens;
     if (includePassword) obj.password = row.password;
     return obj;
   }
