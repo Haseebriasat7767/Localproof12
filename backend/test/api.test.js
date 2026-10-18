@@ -333,7 +333,7 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       const userId = await newBusiness();
       const res = await request(app).get(`/api/widget/${userId}/embed`);
       assert.equal(res.status, 200);
-      const match = res.body.embedCode.match(/^<script>([\\s\\S]*)<\\/script>$/);
+      const match = res.body.embedCode.match(/^<script>([\s\S]*)<\/script>$/);
       assert.ok(match, 'embed response should contain a script element');
       assert.doesNotThrow(() => new Function(match[1]), 'generated widget JavaScript should parse');
     });
