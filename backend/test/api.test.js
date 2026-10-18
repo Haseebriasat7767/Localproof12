@@ -344,13 +344,21 @@ describe('API', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
       assert.equal(rows[0].is_unhappy, true);
     });
 
-    test('treats 4 stars and up as happy', async () => {
+    test('offers the same optional public review link for every rating', async () => {
       const userId = await newBusiness();
-      const res = await request(app).post(`/api/widget/${userId}/submit`).send({ rating: 5 });
-      assert.equal(res.body.showReviewLink, true);
+      const reviewUrl = 'https://example.com/review';
+      await pool.query('UPDATE users SET review_url = $1 WHERE id = $2', [reviewUrl, userId]);
 
-      const { rows } = await pool.query('SELECT is_unhappy FROM feedback WHERE user_id = $1', [userId]);
+      const fiveStar = await request(app).post(`/api/widget/${userId}/submit`).send({ rating: 5 });
+      const oneStar = await request(app).post(`/api/widget/${userId}/submit`).send({ rating: 1 });
+      assert.equal(fiveStar.status, 200);
+      assert.equal(oneStar.status, 200);
+      assert.equal(fiveStar.body.reviewUrl, reviewUrl);
+      assert.equal(oneStar.body.reviewUrl, reviewUrl);
+
+      const { rows } = await pool.query('SELECT is_unhappy FROM feedback WHERE user_id = $1 ORDER BY id', [userId]);
       assert.equal(rows[0].is_unhappy, false);
+      assert.equal(rows[1].is_unhappy, true);
     });
 
     test('rejects out-of-range and non-numeric ratings with 400, not 500', async () => {
