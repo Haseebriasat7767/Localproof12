@@ -12,10 +12,18 @@ router.use(auth, requireActive);
 // Update business profile
 router.patch('/profile', async (req, res, next) => {
   try {
-    const { businessName, tone } = req.body;
+    const { businessName, tone, reviewUrl } = req.body;
+    if (reviewUrl !== undefined) {
+      if (typeof reviewUrl !== 'string' || reviewUrl.length > 2048) {
+        return res.status(400).json({ error: 'Review URL must be a string under 2048 characters' });
+      }
+      if (reviewUrl && !/^https:\/\//i.test(reviewUrl)) {
+        return res.status(400).json({ error: 'Review URL must start with https://' });
+      }
+    }
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { businessName, tone }
+      { businessName, tone, reviewUrl }
     );
     res.json({ user });
   } catch (err) {
