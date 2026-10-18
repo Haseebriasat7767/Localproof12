@@ -96,7 +96,7 @@ router.post('/:userId/submit', submitLimiter, async (req, res) => {
 });
 
 // Backwards-compatible alias used by older demo embeds.
-router.post('/:userId/feedback', submitLimiter, async (req, res) => {
+router.post('/:userId/feedback', async (req, res) => {
   req.url = '/' + req.params.userId + '/submit';
   router.handle(req, res);
 });
