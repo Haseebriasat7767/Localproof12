@@ -57,7 +57,7 @@ export default function LandingPage() {
       <div className="text-center">
         <Globe className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Widget Preview</h3>
-        <p className="text-slate-400 max-w-md mx-auto">Visitors get a one-click rating. Happy → Google. Unhappy → private feedback.</p>
+        <p className="text-slate-400 max-w-md mx-auto">Every customer can rate their experience, leave a comment, and choose whether to share publicly.</p>
         <div className="mt-6 mx-auto max-w-sm">
           <div className="p-6 bg-white/5 rounded-xl text-center text-slate-300 text-sm border border-white/10">
             <Star size={20} className="mx-auto mb-2 text-yellow-400" />
@@ -81,7 +81,7 @@ export default function LandingPage() {
       <div className="text-center">
         <RefreshCw className="text-brand-500 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-2">Customer Flow</h3>
-        <p className="text-slate-400 max-w-md mx-auto">Visit site → widget pops up → rate → routed to Google Review or private form.</p>
+        <p className="text-slate-400 max-w-md mx-auto">Open the widget → share honest feedback → optionally leave a public review.</p>
       </div>
     ),
   };
@@ -174,7 +174,7 @@ export default function LandingPage() {
           <FadeIn>
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">Everything you need to grow your reputation</h2>
-              <p className="text-slate-400 max-w-xl mx-auto mt-4 text-lg">Simple tools that protect your reputation and grow your Google reviews on autopilot.</p>
+              <p className="text-slate-400 max-w-xl mx-auto mt-4 text-lg">Simple tools to understand customer feedback, manage reviews, and respond consistently.</p>
             </div>
           </FadeIn>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -186,7 +186,7 @@ export default function LandingPage() {
                 <h3 className="text-lg font-semibold mb-3 text-white">Honest Feedback Collection</h3>
                 <p className="text-slate-400 leading-relaxed text-sm">Every customer can share private feedback and has the same option to leave a public review, regardless of their rating.</p>
                 <div className="mt-6 flex items-center gap-2 text-sm text-brand-500">
-                  <CheckCircle size={14} /> <span>Google & FTC compliant</span>
+                  <CheckCircle size={14} /> <span>Unbiased review requests</span>
                 </div>
               </div>
             </FadeIn>
@@ -348,7 +348,7 @@ export default function LandingPage() {
               <span className="bg-gradient-to-r from-brand-500 to-success-400 bg-clip-text text-transparent">customer experience?</span>
             </h2>
             <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">
-              Unlimited AI drafts, review tracking, and smart routing widget — $49/month. Setup takes 30 seconds.
+              AI reply drafts, review tracking, and a neutral feedback widget — $49/month. Setup takes minutes.
             </p>
             <a href="/register" className="inline-flex items-center gap-2 bg-white text-[#0a0e1a] px-10 py-4 rounded-full font-semibold text-lg hover:bg-slate-200 transition-all shadow-xl shadow-white/10">
               Start free trial <ArrowRight size={20} />
