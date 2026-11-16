@@ -4,3 +4,8 @@ node_modules/
 build/
 dist/
 .DS_Store
+
+# Ephemeral embedded Postgres used by `npm run demo` (never commit the demo DB)
+.pgdata/
+.pgdata*/
+data/db/
