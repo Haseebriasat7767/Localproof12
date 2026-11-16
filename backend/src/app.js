@@ -5,6 +5,13 @@ const { initDb, pool, connection, CONNECTION_VARS } = require('./db');
 const { checkEnv } = require('./config/env');
 const errorHandler = require('./middleware/errorHandler');
 
+// Opt-in single-container serving of the built React app. Disabled unless
+// SERVE_FRONTEND=1 and a production build exists, so the default split hosting
+// (Vercel static frontend + serverless /api, or Railway) is left unchanged.
+const path = require('path');
+const fs = require('fs');
+const FRONTEND_BUILD = path.join(__dirname, '..', '..', 'frontend', 'build');
+
 // Report configuration problems once at boot, before anything depends on them.
 checkEnv();
 
@@ -74,6 +81,15 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Single-container mode: serve the compiled React app's static assets from this
+// same server. Placed before the database gate so the landing page and app
+// shell still load even while the database is waking up.
+const serveFrontend = process.env.SERVE_FRONTEND === '1' && fs.existsSync(FRONTEND_BUILD);
+if (serveFrontend) {
+  app.use(express.static(FRONTEND_BUILD));
+  console.log(`[serve] Serving frontend build from ${FRONTEND_BUILD}`);
+}
+
 app.use(async (req, res, next) => {
   try {
     // Call per request rather than awaiting one promise captured at boot: a
@@ -93,6 +109,16 @@ app.use('/api/business', businessRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/widget', widgetRoutes);
 app.use('/api/google', googleRoutes);
+
+// SPA fallback: client-side routes (e.g. /dashboard) are not files on disk, so
+// serve the app shell and let React Router handle them. API and health paths
+// fall through to the JSON 404 below.
+if (serveFrontend) {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health')) return next();
+    res.sendFile(path.join(FRONTEND_BUILD, 'index.html'));
+  });
+}
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
